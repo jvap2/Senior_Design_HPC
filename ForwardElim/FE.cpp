@@ -16,5 +16,8 @@ int main() {
 	DisplayMatrix(A, N, Size_A);
 	cout << "b:" << endl;
 	DisplayMatrix(b, N, Size_b);
+	Diag_Dominant(A, N);
+	cout << "Diag Dominant A:" << endl;
+	DisplayMatrix(A, N, Size_A);
 	return 0;
 }
