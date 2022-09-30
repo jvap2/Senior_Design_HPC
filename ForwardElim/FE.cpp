@@ -11,7 +11,7 @@ int main() {
 	b = new float[N];
 	Random(A, N, N);
 	Random(b, 1, N);
-	FE(A, b, N);
+
 	cout << "A:" << endl;
 	DisplayMatrix(A, N, Size_A);
 	cout << "b:" << endl;
@@ -19,5 +19,10 @@ int main() {
 	Diag_Dominant(A, N);
 	cout << "Diag Dominant A:" << endl;
 	DisplayMatrix(A, N, Size_A);
+	FE(A, b, N);
+	cout << "FE Matrix: " << endl;
+	DisplayMatrix(A, N, Size_A);
+	cout << "b:" << endl;
+	DisplayMatrix(b, N, Size_b);
 	return 0;
 }
