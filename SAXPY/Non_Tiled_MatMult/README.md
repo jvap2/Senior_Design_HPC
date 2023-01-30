@@ -6,4 +6,4 @@
 |1024|1024|6204.88|9.756|637.32|
 |2048|2048|151171|67.893|2226.62|
 
-ntm.pdf
+[ntm.pdf](https://github.com/jvap2/Senior_Design_HPC/files/10538455/ntm.pdf)
