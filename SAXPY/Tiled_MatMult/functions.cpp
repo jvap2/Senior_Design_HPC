@@ -1,5 +1,6 @@
 #include "MatrixMult.h"
 
+
 void InitializeMatrix(float *matrix, int ny, int nx)
 {
 	float *p = matrix;
