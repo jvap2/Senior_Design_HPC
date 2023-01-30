@@ -6,6 +6,7 @@ using namespace std;
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
+#include <math.h>
 
 #define RANGE_MAX 0.5
 #define RANGE_MIN -0.5
