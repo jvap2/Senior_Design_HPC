@@ -67,18 +67,33 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* h_C_Tile,
 {
 	float* d_A, * d_B, * d_C;
 	const int MatrixSizeInBytes = ny * nx * sizeof(float);
-	chrono::time_point<high_resolution_clock> start, end;
-	double computeTime{};
+	float ElapsedTime{};
+	// chrono::time_point<high_resolution_clock> start, end;
+	// double computeTime{};
 
 	//Allocate device memory on the global memory
 	HandleCUDAError(cudaMalloc((void**)&d_A, MatrixSizeInBytes));
 	HandleCUDAError(cudaMalloc((void**)&d_B, MatrixSizeInBytes));
 	HandleCUDAError(cudaMalloc((void**)&d_C, MatrixSizeInBytes));
-
+	cudaEvent_t start, stop;
+	HandleCUDAError(cudaEventCreate(&start));
+	HandleCUDAError(cudaEventCreate(&stop));
 	//transfer data from CPU Memory to GPU Memory
+	HandleCUDAError(cudaEventRecord(start,0));
 	HandleCUDAError(cudaMemcpy(d_A, h_A, MatrixSizeInBytes, cudaMemcpyHostToDevice));
 	HandleCUDAError(cudaMemcpy(d_B, h_B, MatrixSizeInBytes, cudaMemcpyHostToDevice));
-
+	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
+		cout << "Unable to perform event records for stop" << endl;
+	}
+	//Synchronize the stop event
+	if (!HandleCUDAError(cudaEventSynchronize(stop))) {
+		cout << "Unable to perform stream synch with stream_4" << endl;
+	}
+	//Save the elapsed time
+	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
+		cout << "Unable to find elapsed time between events" << endl;
+	}
+	cout<< "Naive Mat Mult Memcpy H->D: "<<ElapsedTime<< " ms"<<endl;
 	//Kernel Invoke Parameters - 2D Grid and 2D Blocks
 	int dimx = 32;
 	int dimy = 32;
@@ -94,16 +109,35 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* h_C_Tile,
 	cout << "\tNumber of threads along Y dimension: " << block.y << endl;
 
 	//Executing Naive Multiplication
-	start = high_resolution_clock::now();
+	HandleCUDAError(cudaEventRecord(start,0));
 	NaiveMult << <grid, block >> > (d_A, d_B, d_C, nx, ny);
 	cudaDeviceSynchronize();
-	end = high_resolution_clock::now();
-	auto elasped_seconds = end - start;
-	computeTime = duration_cast<microseconds>(elasped_seconds).count();
-	cout << "Naive Multiplication: GPU Execution time: " << computeTime << " usecs" << endl;
-
+	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
+		cout << "Unable to perform event records for stop" << endl;
+	}
+	//Synchronize the stop event
+	if (!HandleCUDAError(cudaEventSynchronize(stop))) {
+		cout << "Unable to perform stream synch with stream_4" << endl;
+	}
+	//Save the elapsed time
+	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
+		cout << "Unable to find elapsed time between events" << endl;
+	}
+	cout << "Naive Multiplication: GPU Execution time: " << ElapsedTime << " msecs" << endl;
+	HandleCUDAError(cudaEventRecord(start,0));
 	HandleCUDAError(cudaMemcpy(h_C, d_C, MatrixSizeInBytes, cudaMemcpyDeviceToHost));
-
+	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
+		cout << "Unable to perform event records for stop" << endl;
+	}
+	//Synchronize the stop event
+	if (!HandleCUDAError(cudaEventSynchronize(stop))) {
+		cout << "Unable to perform stream synch with stream_4" << endl;
+	}
+	//Save the elapsed time
+	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
+		cout << "Unable to find elapsed time between events" << endl;
+	}
+	cout<< "Naive Mat Mult Memcpy D->H: "<<ElapsedTime<< " msecs" <<endl;
 	MatrixMultVerification(ref, h_C, ny, nx);
 	//Release the device memory of the C Matrix
 	HandleCUDAError(cudaFree(d_C));//We are releasing the memory of the product matrix so there is no effect of stack or cache
@@ -111,14 +145,23 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* h_C_Tile,
 	//Executing the Tiled Matrix Multiplication
 	//Reallocate the device memory of the C Matrix
 	HandleCUDAError(cudaMalloc((void**)&d_C, MatrixSizeInBytes));
-	HandleCUDAError(cudaMalloc((void**)&d_C, MatrixSizeInBytes));
-	start = high_resolution_clock::now();
+	// HandleCUDAError(cudaMalloc((void**)&d_C, MatrixSizeInBytes));
+	HandleCUDAError(cudaEventRecord(start,0));
 	TiledMult << <grid, block >> > (d_A, d_B, d_C, nx);//If we had third parameter, it would be for dynamically allocated shared memory
 	cudaDeviceSynchronize();
-	end = high_resolution_clock::now();
-	elasped_seconds = end - start;
-	computeTime = duration_cast<microseconds>(elasped_seconds).count();
-	cout << "Tiled Multiplication: GPU Execution time: " << computeTime << " usecs" << endl;
+	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
+		cout << "Unable to perform event records for stop" << endl;
+	}
+	//Synchronize the stop event
+	if (!HandleCUDAError(cudaEventSynchronize(stop))) {
+		cout << "Unable to perform stream synch with stream_4" << endl;
+	}
+	//Save the elapsed time
+	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
+		cout << "Unable to find elapsed time between events" << endl;
+	}
+	cout << "Tiled Multiplication: GPU Execution time: " << ElapsedTime << " msecs" << endl;
+
 
 	HandleCUDAError(cudaMemcpy(h_C_Tile, d_C, MatrixSizeInBytes, cudaMemcpyDeviceToHost));
 	MatrixMultVerification(ref, h_C_Tile, ny, nx);
