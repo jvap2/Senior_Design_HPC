@@ -5,8 +5,8 @@ int main()
 {
 	srand((unsigned)time(NULL));
 
-	int rows = 1 << 6;
-	int cols = 1 << 6;
+	int rows = 1 << 11;
+	int cols = 1 << 11;
 	cout << "Matrix Multiplication of Size: " << rows << "x" << cols << endl;
 	float* A, * B, * C;
 
