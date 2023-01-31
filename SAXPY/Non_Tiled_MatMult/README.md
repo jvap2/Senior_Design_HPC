@@ -6,3 +6,4 @@
 |1024|1024|6204.88|9.756|637.32|
 |2048|2048|151171|67.893|2226.62|
 
+![ntm](https://user-images.githubusercontent.com/84815326/215891765-c1f77a40-a1a0-4ee4-9eaf-2cad6f90bb4b.png)
