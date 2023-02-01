@@ -162,6 +162,8 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* h_C_Tile,
 	}
 	cout << "Tiled Multiplication: GPU Execution time: " << ElapsedTime << " msecs" << endl;
 
+	HandleCUDAError(cudaEventDestroy(start));
+	HandleCUDAError(cudaEventDestroy(stop));
 
 	HandleCUDAError(cudaMemcpy(h_C_Tile, d_C, MatrixSizeInBytes, cudaMemcpyDeviceToHost));
 	MatrixMultVerification(ref, h_C_Tile, ny, nx);
