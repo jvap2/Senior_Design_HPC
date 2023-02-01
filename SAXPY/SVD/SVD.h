@@ -18,5 +18,9 @@ void InitializeMatrix(float* matrix, int ny, int nx);
 void ZeroMatrix(float* temp, const int ny, const int nx);
 void SVDVerification(float* hostC, float* gpuC, const int ny, const int nx);
 void DisplayMatrix(string name, float* temp, const int ny, const int nx);
-
-void Bidiagonal(float* A, int ny, int nx);
+void cpuVectorAddition(float* A, float* B, float* C, int size);
+float L_2(float* temp, int size, float& res);
+float sign(float x);
+void Vect_Const_Mult_Addr(float* temp, float a, int size);
+void Vect_Const_Mult(float* temp, float* return_temp, float a, int size);
+void Bidiagonal(float* A, float* x, float* u, float* v, float* e_1, float* e_1_u, float* e_1_v, int ny, int nx);
