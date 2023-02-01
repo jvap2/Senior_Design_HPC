@@ -7,3 +7,5 @@ This Senior Design Project performed by Tessa Rodgers and Jayden Vap will compri
 ![Xilinx Alveo U50 FPGA Accelerator Card Documentation](https://www.xilinx.com/products/boards-and-kits/alveo/u50.html)
 
 ![Xilinx Alveo U55C FPGA Accelerator Card Documentation](https://www.xilinx.com/products/boards-and-kits/alveo/u55c.html)
+
+![NVIDIA Quadro RTX 4000 GPU](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwihgYu4z_T8AhXCBTQIHe2ND7AQFnoECBcQAQ&url=https%3A%2F%2Fwww.nvidia.com%2Fcontent%2Fdam%2Fen-zz%2FSolutions%2Fdesign-visualization%2Fquadro-product-literature%2Fquadro-rtx-4000-datasheet.pdf&usg=AOvVaw3N5pUJYT0coiZU2KShQ3Hf)
