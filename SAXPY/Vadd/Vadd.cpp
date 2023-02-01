@@ -3,7 +3,7 @@
 
 int main(){
     float *A,*B,*C, *gpuC;
-    int size=1<<6;
+    int size=1<<20;
     cout<<"Vector Size: "<<size<<endl;
     A=new float[size];
     B=new float[size];
