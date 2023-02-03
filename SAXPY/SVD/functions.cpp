@@ -28,6 +28,15 @@ void ZeroMatrix(float *temp, const int ny, const int nx)
 	}
 }
 
+void ZeroVector(float *temp, const int size)
+{
+	float *p = temp;
+	for (int j = 0; j < size; j++)
+	{
+		p[j] = 0.0f;
+	}
+}
+
 
 void DisplayMatrix(string name, float* temp, const int ny, const int nx)
 {
