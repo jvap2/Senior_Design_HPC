@@ -1,13 +1,12 @@
 #include "SVD.h"
 
-float L_2(float* temp, int size, float& res){
+void L_2(float* temp, int k, int size, float& res){
     float sum{};
-    for(int i{}; i<size; i++){
+    for(int i=k; i<size; i++){
         sum+= powf(temp[i], 2.0f);
     }
     res=sqrtf(sum);
     cout<< "L_2: "<<res<<endl;
-    return res;
 }
 
 void cpuVectorAddition(float* A, float* B, float* C, int size){
@@ -17,132 +16,104 @@ void cpuVectorAddition(float* A, float* B, float* C, int size){
     }
 }
 
-float sign(float x){
+void sign(float x, float& res){
     if(x>0){
-        float res=1;
-        return res;
+        res=1;
     }
     else if( x<0 ){
-        float res=-1;
-        return res;
+        res=-1;
     }
     else{
-        return 0.0f;
+        res=0.0f;
     }
 }
 
-void Vect_Const_Mult(float* temp, float* return_temp, float a, int size){
-    for(int i=0; i<size; i++){
-        return_temp[i]=temp[i]*a;
-        cout<<"return temp: "<<return_temp[i]<<endl;
+void Copy_To_Row(float*A, float* vect,int k, int nx){
+    /*Here, we will copy v[k+2:nx-1] to A[k][k+2:nx-1], i.e. we are
+    overwriting the kth row of A*/
+    for (int i=k+2; i<nx; i++){
+        A[k*nx+i]=vect[i];
     }
 }
 
-void Vect_Const_Mult_Addr(float* temp, float a, int size){
-    for(int i=0; i<size; i++){
-        temp[i]*=a;
+void Copy_Col_House(float* A, float* vect, int k, int ny, int nx){
+    for (int i=k; i<ny;i++){
+        A[i*nx+k]=vect[i];
     }
 }
 
-void Update_A_1(float* A, float* u, float* p_hold, float* p_hold_2, int k, int ny, int nx){
+void Copy_To_Column(float*A, float* vect, int k, int ny, int nx){
+    /*Here we will be overwriting A[k+1:m-1][j] with u[k+1:m-1]*/
+    for (int i=k+1; i<ny;i++){
+        A[i*nx+k]=vect[i];
+    }
+}
+
+
+void Dot_Product(float* v_1, float* v_2, float& res, int k, int size){
+    for(int i=k;i<size; i++){
+        res+=v_1[i]*v_2[i];
+    }
+}
+
+void Aug_Mat_Vect_Mult(float* A, float* res, float* v, int k, int ny, int nx){
+    float* p=A;
     float temp{};
-    for(int j=k; j<nx; j++){
-        for(int m=k;m<ny;m++){
-            temp+=u[m]*A[m*nx+j];
+    TransposeOnCPU(A,p,ny,nx);
+    for(int i=k; i<nx; i++){
+        for(int j=k; j<ny; j++){
+            temp+=p[i*ny+j]*v[j];
         }
-        p_hold[j]=temp;
+        res[i]=temp;
         temp=0;
     }
-    for(int i=k;i<ny;i++){
-        for(int j=k; j<nx;j++){
-            p_hold_2[i*nx+j]=u[i]*p_hold[j];
-        }
-    }
-    for(int i=k; i<ny;i++){
-        for(int j=k;j<nx;j++){
-            A[i*nx+j]-=(2*p_hold_2[i*nx+j]);
-        }
-    }
-    for(int i{}; i<ny;i++){
-        for(int j{}; j<nx;j++){
-            cout<<A[i*nx+j]<<'\t';
-        }
-        cout<<endl;
+}
+
+void const_vect_mult(float* v, float constant, int k, int size){
+    for(int i=k; i<size; i++){
+        v[i]*=constant;
     }
 }
 
-
-void Update_A_2(float* A, float* v, float* p_hold, float* p_hold_2, int k, int ny, int nx){
-    float temp{};
-    for(int i=k; i<ny;i++){
-        for(int j=k+1; j<nx; j++){
-            temp+=A[i*nx+j]*v[j];
-        }
-        p_hold[i]=temp;
-        temp=0;
-    }
-    for(int i=k; i<ny;i++){
-        for(int j=k+1; j<nx; j++){
-            p_hold_2[i*nx+j]=p_hold[i]*v[j];
-        }
-    }
-    for(int i=k; i<ny;i++){
-        for(int j=k;j<nx;j++){
-            A[i*nx+j]-=(2*p_hold_2[i*nx+j]);
-        }
-    }
-    for(int i{}; i<ny;i++){
-        for(int j{}; j<nx;j++){
-            cout<<A[i*nx+j]<<'\t';
-        }
-        cout<<endl;
-    }
-
-
-}
-
-
-void Bidiagonal(float* A, float* x, float* u, float* v, float* e_1, float* e_1_u, float* e_1_v,int ny, int nx){
-    float s_x_1{};
-    float x_norm{};
-    float u_norm{};
-    float v_norm{};
-    float p_hold[ny];
-    float p_hold_2[ny];
-    float p_hold_3[ny];
-    float p_hold_4[ny];
-    for(int k{}; k<nx; k++){
-        for(int i=k; i<ny; i++){
-            x[i]=A[i*ny+k];
-            cout<<"x["<<i<<"]"<<"="<<x[i]<<endl;
-        }
-        cout<<"Taking the sign of x"<<endl;
-        s_x_1=sign(x[k]);
-        cout<<"L_2 norm for u"<<endl;
-        L_2(x,ny,x_norm);
-        x_norm*=s_x_1;
-        cout<<"u_k=x+sign(x)||x||e_1"<<endl;
-        Vect_Const_Mult(e_1,e_1_u,x_norm,ny);
-        cpuVectorAddition(x,e_1_u,u,ny);
-        cout<<"u_k=u_k dived||u_k||"<<endl;
-        L_2(u,ny,u_norm);
-        u_norm=1/u_norm;
-        Vect_Const_Mult_Addr(u,u_norm,ny);
-        cout<<"Updating A_1"<<endl;
-        Update_A_1(A, u, p_hold, p_hold_2, k, ny, nx);
-        if(k<=nx-2){
-            for(int i=k+1; i<nx;i++){
-                x[i]=A[k*nx+i];
-            }
-            s_x_1=sign(x[k]);
-            L_2(x,ny,x_norm);
-            x_norm*=s_x_1;
-            Vect_Const_Mult(e_1,e_1_v,x_norm,nx);
-            cpuVectorAddition(x,e_1_v,v,nx);
-            L_2(v,ny,v_norm);
-            v_norm=1/v_norm;
-            Vect_Const_Mult_Addr(v,v_norm,nx);
-            Update_A_2(A, v, p_hold_3, p_hold_4, k, ny, nx);
+void Outer_Product(float* w, float* v, float* res, int k, int ny, int nx){
+    for(int i=k; i<ny; i++){
+        for(int j=k; j<nx; j++){
+            res[i*nx+j]=v[i]*w[j];
         }
     }
 }
+
+void Matrix_Addition(float* A, float* B, float* C, int k, int ny, int nx){
+    for(int i=k; i<ny; i++){
+        for(int j=k; j<nx; j++){
+            C[i*nx+j]=A[i*nx+j]+B[i*nx+j];
+        }
+    }
+}
+
+void House_Row(float* A, float* v, int k, int ny, int nx){
+    Copy_Col_House(A,v,k,ny,nx);
+    float mu{};
+    float beta{};
+    float s{};
+    float dot{};
+    float res[nx-k];
+    float* p=A;
+    L_2(v,k,ny,mu);
+    sign(v[k],s);
+    beta=v[k]+s*mu;
+    for(int i=k+1;i<ny;i++){
+        v[i]/=beta;
+    }
+    v[k]=1.0f;//Done with the house, do row.house
+    Dot_Product(v,v,dot,k,ny);
+    beta=-2/dot;
+    Aug_Mat_Vect_Mult(A,res,v,k,ny,nx);
+    const_vect_mult(res,beta,k,nx);
+    Outer_Product(res,v,p,k,ny,nx);
+    Matrix_Addition(A,p,A,k,ny,nx);
+}
+
+
+
+

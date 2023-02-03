@@ -37,6 +37,11 @@ void ZeroVector(float *temp, const int size)
 	}
 }
 
+void eye_1(float* temp, int size){
+	ZeroVector(temp,size);
+	temp[0]=1;
+}
+
 
 void DisplayMatrix(string name, float* temp, const int ny, const int nx)
 {
@@ -73,5 +78,24 @@ void SVDVerification(float* hostC, float* gpuC, const int ny, const int nx)
 		}
 		p += nx;
 		q += nx;
+	}
+}
+
+void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx)
+{
+	for (int y = 0; y < ny; y++)
+	{
+		for (int x = 0; x < nx; x++)
+		{
+			//Load Coalesced and Store stride
+			matrixTranspose[x * ny + y] = matrix[y * nx + x];
+		}
+	}
+}
+
+void IdentityMatrix(float* temp, int size){
+	ZeroMatrix(temp,size,size);
+	for(int i{}; i<size; i++){
+		temp[i*size+i]=1.0f;
 	}
 }

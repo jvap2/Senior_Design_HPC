@@ -19,9 +19,13 @@ void ZeroMatrix(float* temp, const int ny, const int nx);
 void SVDVerification(float* hostC, float* gpuC, const int ny, const int nx);
 void DisplayMatrix(string name, float* temp, const int ny, const int nx);
 void cpuVectorAddition(float* A, float* B, float* C, int size);
-float L_2(float* temp, int size, float& res);
-float sign(float x);
+void L_2(float* temp, int k, int size, float& res);
+void sign(float x, float& res);
+void eye_1(float* temp, int size);
+void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx);
+void IdentityMatrix(float* temp, int size);
 void ZeroVector(float *temp, const int size);
-void Vect_Const_Mult_Addr(float* temp, float a, int size);
-void Vect_Const_Mult(float* temp, float* return_temp, float a, int size);
-void Bidiagonal(float* A, float* x, float* u, float* v, float* e_1, float* e_1_u, float* e_1_v, int ny, int nx);
+void Copy_To_Row(float*A, float* vect, int k, int nx);
+void Copy_To_Column(float*A, float* vect, int k, int ny, int nx);
+void House(float* A, float* temp, int k, int size);
+
