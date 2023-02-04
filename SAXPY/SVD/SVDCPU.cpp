@@ -38,7 +38,7 @@ void Copy_To_Row(float*A, float* vect,int k, int nx){
 
 void Copy_Col_House(float* A, float* vect, int k, int ny, int nx){
     for (int i=k; i<ny;i++){
-        A[i*nx+k]=vect[i];
+        vect[i]=A[i*nx+k];
     }
 }
 
@@ -99,19 +99,23 @@ void House_Row(float* A, float* v, int k, int ny, int nx){
     float dot{};
     float res[nx-k];
     float* p=A;
+    //p will store vw^T
     L_2(v,k,ny,mu);
     sign(v[k],s);
+    //The above two lines are for the householder algo
     beta=v[k]+s*mu;
     for(int i=k+1;i<ny;i++){
         v[i]/=beta;
     }
     v[k]=1.0f;//Done with the house, do row.house
+    //Row House
     Dot_Product(v,v,dot,k,ny);
     beta=-2/dot;
     Aug_Mat_Vect_Mult(A,res,v,k,ny,nx);
     const_vect_mult(res,beta,k,nx);
     Outer_Product(res,v,p,k,ny,nx);
     Matrix_Addition(A,p,A,k,ny,nx);
+    Copy_To_Column(A,v, k,ny,nx);
 }
 
 
