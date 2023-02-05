@@ -69,6 +69,19 @@ void Aug_Mat_Vect_Mult(float* A, float* res, float* v, int k, int ny, int nx){
     }
 }
 
+
+void Aug_Mat_Vect_Mult_Col(float* A, float* res, float* v, float beta, int k, int ny, int nx){
+    float* p=A;
+    float temp{};
+    for(int i=k; i<ny; i++){
+        for(int j=k+1; j<nx; j++){
+            temp+=p[i*nx+j]*v[j];
+        }
+        res[i]=beta*temp;
+        temp=0;
+    }
+}
+
 void const_vect_mult(float* v, float constant, int k, int size){
     for(int i=k; i<size; i++){
         v[i]*=constant;
@@ -97,7 +110,7 @@ void House_Row(float* A, float* v, int k, int ny, int nx){
     float beta{};
     float s{};
     float dot{};
-    float res[nx-k];
+    float res[nx];
     float* p=A;
     //p will store vw^T
     L_2(v,k,ny,mu);
@@ -127,6 +140,7 @@ void Col_Row(float* A, float* v, int k, int ny, int nx){
     float beta{};
     float s{};
     float dot{};
+    float res[ny];
     L_2(v,k,nx,mu);
     sign(v[k],s);
     beta=v[k]+s*mu;
@@ -136,7 +150,10 @@ void Col_Row(float* A, float* v, int k, int ny, int nx){
     v[k]=1.0f;
     Dot_Product(v,v,dot,k,nx);
     beta=-2/dot;
-
+    Aug_Mat_Vect_Mult_Col(A, res, v, beta, k, ny, nx);
+    Outer_Product(v,res,p,k,ny,nx);
+    Matrix_Addition(A,p,A,k,ny,nx);
+    Copy_To_Row(A,v,k,nx);
 }
 
 
