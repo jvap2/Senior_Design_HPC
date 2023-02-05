@@ -118,6 +118,27 @@ void House_Row(float* A, float* v, int k, int ny, int nx){
     Copy_To_Column(A,v, k,ny,nx);
 }
 
+void Col_Row(float* A, float* v, int k, int ny, int nx){
+    float* p=A;
+    int j=k+1;
+    TransposeOnCPU(A,p,ny,nx);//Now p is nx by ny
+    Copy_Col_House(p,v,j,nx,ny);
+    float mu{};
+    float beta{};
+    float s{};
+    float dot{};
+    L_2(v,k,nx,mu);
+    sign(v[k],s);
+    beta=v[k]+s*mu;
+    for(int i=k+1;i<nx;i++){
+        v[i]/=beta;
+    }
+    v[k]=1.0f;
+    Dot_Product(v,v,dot,k,nx);
+    beta=-2/dot;
+
+}
+
 
 
 
