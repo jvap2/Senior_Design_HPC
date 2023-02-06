@@ -42,6 +42,12 @@ void Copy_Col_House(float* A, float* vect, int k, int ny, int nx){
     }
 }
 
+void Copy_Row_House(float* A, float* vect, int k, int ny, int nx){
+    for (int i=k+1; i<ny;i++){
+        vect[i]=A[k*nx+i];
+    }
+}
+
 void Copy_To_Column(float*A, float* vect, int k, int ny, int nx){
     /*Here we will be overwriting A[k+1:m-1][j] with u[k+1:m-1]*/
     for (int i=k+1; i<ny;i++){
@@ -57,25 +63,29 @@ void Dot_Product(float* v_1, float* v_2, float& res, int k, int size){
 }
 
 void Aug_Mat_Vect_Mult(float* A, float* res, float* v, int k, int ny, int nx){
-    float* p=A;
     float temp{};
-    TransposeOnCPU(A,p,ny,nx);
+    cout<<"nx="<<nx<<endl;
+    // TransposeOnCPU(A,p,ny,nx);
     for(int i=k; i<nx; i++){
         for(int j=k; j<ny; j++){
-            temp+=p[i*ny+j]*v[j];
+            temp+=A[j*nx+i]*v[j];
+            cout<<"p["<<i<<"]["<<j<<"]="<<A[j*nx+i]<<endl;
+            cout<<"v["<<j<<"]="<<v[j]<<endl;
         }
         res[i]=temp;
+        cout<<"Res["<<i<<"]="<<res[i]<<endl;
         temp=0;
     }
 }
 
 
 void Aug_Mat_Vect_Mult_Col(float* A, float* res, float* v, float beta, int k, int ny, int nx){
-    float* p=A;
     float temp{};
     for(int i=k; i<ny; i++){
         for(int j=k+1; j<nx; j++){
-            temp+=p[i*nx+j]*v[j];
+            temp+=A[i*nx+j]*v[j];
+            cout<<"p["<<i<<"]["<<j<<"]="<<A[i*nx+j]<<endl;
+            cout<<"v["<<j<<"]="<<v[j]<<endl;
         }
         res[i]=beta*temp;
         temp=0;
@@ -96,64 +106,87 @@ void Outer_Product(float* w, float* v, float* res, int k, int ny, int nx){
     }
 }
 
-void Matrix_Addition(float* A, float* B, float* C, int k, int ny, int nx){
+void Matrix_Addition(float* A, float* B, int k, int ny, int nx){
     for(int i=k; i<ny; i++){
         for(int j=k; j<nx; j++){
-            C[i*nx+j]=A[i*nx+j]+B[i*nx+j];
+            A[i*nx+j]+=B[i*nx+j];
         }
     }
 }
 
-void House_Row(float* A, float* v, int k, int ny, int nx){
+
+void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     Copy_Col_House(A,v,k,ny,nx);
     float mu{};
     float beta{};
     float s{};
     float dot{};
-    float res[nx];
-    float* p=A;
     //p will store vw^T
     L_2(v,k,ny,mu);
     sign(v[k],s);
     //The above two lines are for the householder algo
     beta=v[k]+s*mu;
-    for(int i=k+1;i<ny;i++){
-        v[i]/=beta;
+    if(fabsf(beta)>=1e-6){
+        for(int i=k+1;i<ny;i++){
+            v[i]/=beta;
+        }
     }
     v[k]=1.0f;//Done with the house, do row.house
     //Row House
+    DisplayMatrix("V",v,ny,1);
     Dot_Product(v,v,dot,k,ny);
     beta=-2/dot;
+    cout<<"Beta= "<<beta<<endl;
     Aug_Mat_Vect_Mult(A,res,v,k,ny,nx);
     const_vect_mult(res,beta,k,nx);
+    DisplayMatrix("Blah", res, nx,1);
     Outer_Product(res,v,p,k,ny,nx);
-    Matrix_Addition(A,p,A,k,ny,nx);
-    Copy_To_Column(A,v, k,ny,nx);
+    DisplayMatrix("OuterProd",p,ny,nx);
+    Matrix_Addition(A,p,k,ny,nx);
+    DisplayMatrix("A",A,ny,nx);
+    // Copy_To_Column(A,v, k,ny,nx);
+    // DisplayMatrix("A",A,ny,nx);
 }
 
-void Col_Row(float* A, float* v, int k, int ny, int nx){
-    float* p=A;
+void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
+    Copy_Row_House(A,v,k,ny,nx);
+    DisplayMatrix("V",v,nx,1);
+    DisplayMatrix("A",A,ny,nx);
     int j=k+1;
-    TransposeOnCPU(A,p,ny,nx);//Now p is nx by ny
-    Copy_Col_House(p,v,j,nx,ny);
     float mu{};
     float beta{};
     float s{};
     float dot{};
-    float res[ny];
-    L_2(v,k,nx,mu);
-    sign(v[k],s);
-    beta=v[k]+s*mu;
-    for(int i=k+1;i<nx;i++){
-        v[i]/=beta;
+    L_2(v,j,nx,mu);
+    sign(v[j],s);
+    beta=v[j]+s*mu;
+    cout<<"Beta= "<<beta<<endl;
+    if(fabsf(beta)>=1e-6){
+        for(int i=j+1;i<nx;i++){
+            v[i]/=beta;
+        }
     }
-    v[k]=1.0f;
-    Dot_Product(v,v,dot,k,nx);
+    v[j]=1.0f;
+    DisplayMatrix("V",v,nx,1);
+    Dot_Product(v,v,dot,j,nx);
     beta=-2/dot;
+    cout<<"Beta= "<<beta<<endl;
     Aug_Mat_Vect_Mult_Col(A, res, v, beta, k, ny, nx);
+    DisplayMatrix("Blah", res, ny,1);
     Outer_Product(v,res,p,k,ny,nx);
-    Matrix_Addition(A,p,A,k,ny,nx);
-    Copy_To_Row(A,v,k,nx);
+    DisplayMatrix("OuterProd",p,ny,nx);
+    Matrix_Addition(A,p,k,ny,nx);
+    // DisplayMatrix("A",A,ny,nx);
+    // Copy_To_Row(A,v,k,nx);
+}
+
+void House(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+    for(int k=0; k<nx; k++){
+        House_Row(A,p,res_1,v_1,k,ny,nx);
+        if(k<=(nx-2)){
+            House_Col(A,p_2,res_2, v_2, k, ny, nx);
+        }
+    }
 }
 
 
