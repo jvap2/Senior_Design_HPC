@@ -16,7 +16,7 @@ int main(){
     if(ny>nx){
         House_1(A,p,p_2,res_1,res_2, v_1, v_2, ny,nx);
     }
-    if(nx>ny){
+    if(ny<nx){
         House_2(A,p,p_2,res_1,res_2, v_1, v_2, ny,nx);
     }
     DisplayMatrix("Bidiag A",A,ny,nx);
