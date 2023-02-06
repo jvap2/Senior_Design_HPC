@@ -34,7 +34,9 @@ void Aug_Mat_Vect_Mult_Col(float* A, float* res, float* v, float beta, int k, in
 void const_vect_mult(float* v, float constant, int k, int size);
 void Outer_Product(float* w, float* v, float* res, int k, int ny, int nx);
 void Matrix_Addition(float* A, float* B, int k, int ny, int nx);
+void Matrix_Addition_Col(float* A, float* B, int k, int ny, int nx);
 void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx);
 void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx);
-void House(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
+void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
+void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
 

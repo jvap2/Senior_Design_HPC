@@ -41,7 +41,7 @@ void Copy_Col_House(float* A, float* vect, int k, int ny, int nx){
 }
 
 void Copy_Row_House(float* A, float* vect, int k, int ny, int nx){
-    for (int i=k+1; i<ny;i++){
+    for (int i=k+1; i<nx;i++){
         vect[i]=A[k*nx+i];
     }
 }
@@ -106,6 +106,14 @@ void Matrix_Addition(float* A, float* B, int k, int ny, int nx){
     }
 }
 
+void Matrix_Addition_Col(float* A, float* B, int k, int ny, int nx){
+    for(int i=k; i<ny; i++){
+        for(int j=k+1; j<nx; j++){
+            A[i*nx+j]+=B[i*nx+j];
+        }
+    }
+}
+
 
 void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     Copy_Col_House(A,v,k,ny,nx);
@@ -139,6 +147,7 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
 void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     Copy_Row_House(A,v,k,ny,nx);
     int j=k+1;
+    DisplayMatrix("V",v,nx,1);
     float mu{};
     float beta{};
     float s{};
@@ -157,17 +166,28 @@ void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     beta=-2/dot;
     Aug_Mat_Vect_Mult_Col(A, res, v, beta, k, ny, nx);
     Outer_Product(v,res,p,k,ny,nx);
-    Matrix_Addition(A,p,k,ny,nx);
+    Matrix_Addition_Col(A,p,k,ny,nx);
     DisplayMatrix("A",A,ny,nx);
 //     Copy_To_Row(A,v,k,nx);
 }
 
-void House(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
-    for(int k=0; k<nx; k++){
+void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+    for(int k=0; k<(nx); k++){
+        cout<<"House Row"<<endl;
         House_Row(A,p,res_1,v_1,k,ny,nx);
         if(k<=(nx-2)){
+            cout<<"House Col"<<endl;
             House_Col(A,p_2,res_2, v_2, k, ny, nx);
         }
+    }
+}
+
+void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+    for(int k=0; k<(nx-2); k++){
+        cout<<"House Row"<<endl;
+        House_Row(A,p,res_1,v_1,k,ny,nx);
+        cout<<"House Col"<<endl;
+        House_Col(A,p_2,res_2, v_2, k, ny, nx);
     }
 }
 
