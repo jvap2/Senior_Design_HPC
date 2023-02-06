@@ -6,13 +6,11 @@ void L_2(float* temp, int k, int size, float& res){
         sum+= powf(temp[i], 2.0f);
     }
     res=sqrtf(sum);
-    cout<< "L_2: "<<res<<endl;
 }
 
 void cpuVectorAddition(float* A, float* B, float* C, int size){
     for(int i=0; i<size; i++){
         C[i]=A[i]+B[i];
-        cout<<"C["<<i<<"]="<<C[i]<<endl;
     }
 }
 
@@ -64,16 +62,12 @@ void Dot_Product(float* v_1, float* v_2, float& res, int k, int size){
 
 void Aug_Mat_Vect_Mult(float* A, float* res, float* v, int k, int ny, int nx){
     float temp{};
-    cout<<"nx="<<nx<<endl;
     // TransposeOnCPU(A,p,ny,nx);
     for(int i=k; i<nx; i++){
         for(int j=k; j<ny; j++){
             temp+=A[j*nx+i]*v[j];
-            cout<<"p["<<i<<"]["<<j<<"]="<<A[j*nx+i]<<endl;
-            cout<<"v["<<j<<"]="<<v[j]<<endl;
         }
         res[i]=temp;
-        cout<<"Res["<<i<<"]="<<res[i]<<endl;
         temp=0;
     }
 }
@@ -84,8 +78,6 @@ void Aug_Mat_Vect_Mult_Col(float* A, float* res, float* v, float beta, int k, in
     for(int i=k; i<ny; i++){
         for(int j=k+1; j<nx; j++){
             temp+=A[i*nx+j]*v[j];
-            cout<<"p["<<i<<"]["<<j<<"]="<<A[i*nx+j]<<endl;
-            cout<<"v["<<j<<"]="<<v[j]<<endl;
         }
         res[i]=beta*temp;
         temp=0;
@@ -133,15 +125,11 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     }
     v[k]=1.0f;//Done with the house, do row.house
     //Row House
-    DisplayMatrix("V",v,ny,1);
     Dot_Product(v,v,dot,k,ny);
     beta=-2/dot;
-    cout<<"Beta= "<<beta<<endl;
     Aug_Mat_Vect_Mult(A,res,v,k,ny,nx);
     const_vect_mult(res,beta,k,nx);
-    DisplayMatrix("Blah", res, nx,1);
     Outer_Product(res,v,p,k,ny,nx);
-    DisplayMatrix("OuterProd",p,ny,nx);
     Matrix_Addition(A,p,k,ny,nx);
     DisplayMatrix("A",A,ny,nx);
     // Copy_To_Column(A,v, k,ny,nx);
@@ -150,8 +138,6 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
 
 void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     Copy_Row_House(A,v,k,ny,nx);
-    DisplayMatrix("V",v,nx,1);
-    DisplayMatrix("A",A,ny,nx);
     int j=k+1;
     float mu{};
     float beta{};
@@ -167,17 +153,13 @@ void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
         }
     }
     v[j]=1.0f;
-    DisplayMatrix("V",v,nx,1);
     Dot_Product(v,v,dot,j,nx);
     beta=-2/dot;
-    cout<<"Beta= "<<beta<<endl;
     Aug_Mat_Vect_Mult_Col(A, res, v, beta, k, ny, nx);
-    DisplayMatrix("Blah", res, ny,1);
     Outer_Product(v,res,p,k,ny,nx);
-    DisplayMatrix("OuterProd",p,ny,nx);
     Matrix_Addition(A,p,k,ny,nx);
-    // DisplayMatrix("A",A,ny,nx);
-    // Copy_To_Row(A,v,k,nx);
+    DisplayMatrix("A",A,ny,nx);
+//     Copy_To_Row(A,v,k,nx);
 }
 
 void House(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
