@@ -18,7 +18,7 @@ void sign(float x, float& res){
     if(x>0){
         res=1;
     }
-    else if( x<0 ){
+    else if(x<0){
         res=-1;
     }
     else{
