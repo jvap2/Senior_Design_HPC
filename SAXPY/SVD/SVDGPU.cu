@@ -122,11 +122,35 @@ __global__ void L_2(float* in, float* hold, int size){
 
 __host__ void Bidiag_Helper(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     float* d_A;
-    float* d_p;
-    float* d_p_2;
-    float* d_res_1;
-    float* d_res_2;
-    float* d_v_1;
-    float* d_v_2;
-    
+    float* d_p_row;
+    float* d_p_col;
+    float* d_res_row;
+    float* d_res_col;
+    float* d_v_row;
+    float* d_v_col;
+    float* hold_dot_col;
+    float* hold_dot_row;
+    float* hold_L_2_col;
+    float* hold_L_2_row;
+    int mat_size=nx*ny*sizeof(float);
+    int col_size=ny*sizeof(float);
+    int row_size=nx*sizeof(float);
+    HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) d_res_col, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_res_row, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_v_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) d_v_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) hold_dot_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) hold_dot_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) hold_L_2_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
+
+    HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
+
+
+
+
+
 }
