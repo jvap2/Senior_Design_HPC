@@ -121,5 +121,12 @@ __global__ void L_2(float* in, float* hold, int size){
 
 
 __host__ void Bidiag_Helper(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
-
+    float* d_A;
+    float* d_p;
+    float* d_p_2;
+    float* d_res_1;
+    float* d_res_2;
+    float* d_v_1;
+    float* d_v_2;
+    
 }
