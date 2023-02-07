@@ -87,10 +87,14 @@ __global__ void TiledMult(float* g_A, float* g_B, float* g_C, const int Width)
 	g_C[row * Width + col] = cValue;
 }
 
-__global__ void L_2(float* in, float* hold, int size){
+__global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
     int idx = threadIdx.x+(blockDim.x*blockIdx.x);
     int tid = threadIdx.x;
-    hold[idx]=powf(in[idx],2.0f);
+    if(idx>k){
+        v[idx]=in[idx*nx+k];
+    }
+    __syncthreads();
+    hold[idx]=powf(v[idx],2.0f);
     __syncthreads();
     float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
 
@@ -132,9 +136,18 @@ __host__ void Bidiag_Helper(float* A, float* ref, float* p, float* p_2, float* r
     float* hold_dot_row;
     float* hold_L_2_col;
     float* hold_L_2_row;
+    float L_2{};
     int mat_size=nx*ny*sizeof(float);
     int col_size=ny*sizeof(float);
     int row_size=nx*sizeof(float);
+    int block_dim_1D_row=256;
+    int grid_dim_1D_row=nx/256+1;
+    int block_dim_1D_col=256;
+    int grid_dim_1D_col=ny/256+1;
+    int block_dim_x_2D=16;
+    int block_dim_y_2D=16;
+    int grid_dim_x_2D=nx/block_dim_x_2D+1;
+    int grid_dim_y_2D=ny/block_dim_y_2D+1;
     HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
@@ -148,6 +161,10 @@ __host__ void Bidiag_Helper(float* A, float* ref, float* p, float* p_2, float* r
     HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
 
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
+
+    for(int i{}; i<nx;i++){
+        d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
+    }
 
 
 
