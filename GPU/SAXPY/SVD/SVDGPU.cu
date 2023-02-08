@@ -186,23 +186,88 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
 }
 
 
-__global__ void MatrixVectorMult(float* g_Matrix, float* g_V, float* g_P, const int Size) {
+__global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, int k, const int Size) {
 	int row = threadIdx.x + (blockDim.x * blockIdx.x);//We are providing this automatic variable to allow each thread to identify its location
 	//Each thread will calculate each entry in our resulting vector
 	//To do so, each thread will extract a row of g_Matrix to do with the vector g_V
 	float fSum = 0.0f;//We create an automatic variable fSum for each thread to lower memory accesses in the for loop
 	//We are going to use fSum instead of writing g_P[row]+=....
-	if (row < Size) {
+	if (row < Size & row>k) {
 		//We are trying to ensure we are not using more threads than data we have
-		for (int k{}; k < Size;k++) {
-			fSum += g_Matrix[row * Size + k] * g_V[k];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
+		for (int j=k+1; j < Size;j++) {
+			fSum += g_Matrix[row * Size + j] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
 		}
 		g_P[row] = fSum;//We now assign the row_th entry of g_P the value fSum, i.e., our dot product
 	}
 }
 
 
-__host__ void Bidiag_Helper(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+__global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P, int k, const int Size) {
+	int col = threadIdx.x + (blockDim.x * blockIdx.x);//We are providing this automatic variable to allow each thread to identify its location
+	//Each thread will calculate each entry in our resulting vector
+	//To do so, each thread will extract a row of g_Matrix to do with the vector g_V
+	float fSum = 0.0f;//We create an automatic variable fSum for each thread to lower memory accesses in the for loop
+	//We are going to use fSum instead of writing g_P[row]+=....
+	if (col < Size & col>k) {
+		//We are trying to ensure we are not using more threads than data we have
+		for (int j=k+1; j < Size;j++) {
+			fSum += g_Matrix[j * Size + col] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
+		}
+		g_P[col] = fSum;//We now assign the row_th entry of g_P the value fSum, i.e., our dot product
+	}
+}
+
+
+__host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+    float* d_A;
+    float* d_p_row;
+    float* d_p_col;
+    float* d_res_row;
+    float* d_res_col;
+    float* d_v_row;
+    float* d_v_col;
+    float* hold_dot_col;
+    float* hold_dot_row;
+    float* hold_L_2_col;
+    float* hold_L_2_row;
+    float L_2{};
+    int mat_size=nx*ny*sizeof(float);
+    int col_size=ny*sizeof(float);
+    int row_size=nx*sizeof(float);
+    int block_dim_1D_row=256;
+    int grid_dim_1D_row=nx/256+1;
+    int block_dim_1D_col=256;
+    int grid_dim_1D_col=ny/256+1;
+    int block_dim_x_2D=16;
+    int block_dim_y_2D=16;
+    int grid_dim_x_2D=nx/block_dim_x_2D+1;
+    int grid_dim_y_2D=ny/block_dim_y_2D+1;
+    HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) d_res_col, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_res_row, mat_size));
+    HandleCUDAError(cudaMalloc((void**) d_v_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) d_v_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) hold_dot_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) hold_dot_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) hold_L_2_col, col_size));
+    HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
+
+    HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
+
+    for(int i{}; i<nx;i++){
+        d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
+    }
+
+
+
+
+
+}
+
+
+__host__ void Bidiag_Helper_2(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     float* d_A;
     float* d_p_row;
     float* d_p_col;
