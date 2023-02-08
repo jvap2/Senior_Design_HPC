@@ -12,27 +12,27 @@ __global__ void Outer_Product(float* w, float* v, float* out, int k, int ny, int
 
 __global__ void Update_v(float* v, int k, float beta, int size){
 	int s{};
-	int idx=threadIdx.x+(blockDim.x*blockIdx.x);
+	int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
 	if(idx<=size & idx>k){
 		v[idx]/=beta;
+	}
+	if(idx==k){
+		v[idx]=1.0f;
 	}
 	__syncthreads();
 
 }
 
-__global__ void Dot_Product(float* w, float* v, float* hold, float out, int k, int size){
-    int idx=threadIdx.x+(blockDim.x*blockIdx.x);
+__global__ void Dot_Product(float* w, float* v, float* hold, float out, int k, int size, int check){
+    int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
     int tid=threadIdx.x;
-	if(idx>=k){
-		hold[idx]=w[idx]*v[idx];
-	}
-    __syncthreads();
-    float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
-
 	if (idx >= size)
 	{
 		return;//Leave the kernel if the global index of our thread exceeds the size of the vector being processed
 	}
+	hold[idx]=w[idx]*v[idx];
+    __syncthreads();
+    float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
 	//Perform the interleaved reduction, used to reduce divergence.
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
@@ -149,21 +149,17 @@ __global__ void TiledMult_Col(float* g_A, float* g_B, float* g_C, const int Widt
 }
 
 __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
-    int idx = threadIdx.x+(blockDim.x*blockIdx.x);
+    int idx = threadIdx.x+(blockDim.x*blockIdx.x)+k;// Push off by k in order to get elements k through n, or k through m
     int tid = threadIdx.x;
-    if(idx<k & idx>size){
+    if(idx>=size){
 		return;
     }
+	//Load the necessary section of A into the v vector, this will be used later
 	v[idx]=in[idx*nx+k];
     __syncthreads();
-    hold[idx]=powf(v[idx],2.0f);
+    hold[idx]=powf(v[idx],2.0f);//Update hold rather than v so we can use v in the next step
     __syncthreads();
     float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
-
-	if (idx >= size)
-	{
-		return;//Leave the kernel if the global index of our thread exceeds the size of the vector being processed
-	}
 	//Perform the interleaved reduction, used to reduce divergence.
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
@@ -181,18 +177,17 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
 		hold[blockIdx.x] = blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
 		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
 	}
-    //Commit on the CPU
 
 }
 
 
 __global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, int k, const int Size) {
-	int row = threadIdx.x + (blockDim.x * blockIdx.x);//We are providing this automatic variable to allow each thread to identify its location
+	int row = threadIdx.x + (blockDim.x * blockIdx.x)+k;//We are providing this automatic variable to allow each thread to identify its location
 	//Each thread will calculate each entry in our resulting vector
 	//To do so, each thread will extract a row of g_Matrix to do with the vector g_V
 	float fSum = 0.0f;//We create an automatic variable fSum for each thread to lower memory accesses in the for loop
 	//We are going to use fSum instead of writing g_P[row]+=....
-	if (row < Size & row>k) {
+	if (row < Size) {
 		//We are trying to ensure we are not using more threads than data we have
 		for (int j=k+1; j < Size;j++) {
 			fSum += g_Matrix[row * Size + j] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
@@ -203,12 +198,13 @@ __global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P
 
 
 __global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P, int k, const int Size) {
-	int col = threadIdx.x + (blockDim.x * blockIdx.x);//We are providing this automatic variable to allow each thread to identify its location
+	//This is for row.house where w=beta*A^t*v
+	int col = threadIdx.x + (blockDim.x * blockIdx.x)+k;//We are providing this automatic variable to allow each thread to identify its location
 	//Each thread will calculate each entry in our resulting vector
 	//To do so, each thread will extract a row of g_Matrix to do with the vector g_V
 	float fSum = 0.0f;//We create an automatic variable fSum for each thread to lower memory accesses in the for loop
 	//We are going to use fSum instead of writing g_P[row]+=....
-	if (col < Size & col>k) {
+	if (col < Size) {
 		//We are trying to ensure we are not using more threads than data we have
 		for (int j=k+1; j < Size;j++) {
 			fSum += g_Matrix[j * Size + col] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
@@ -258,6 +254,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
 
     for(int i{}; i<nx;i++){
         d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
+
     }
 
 
