@@ -7,13 +7,17 @@
 __global__ void Outer_Product(float* w, float* v, float* out, int k, int ny, int nx){
     int row=threadIdx.y+(blockDim.y*blockIdx.y);
     int col=threadIdx.x+(blockDim.x*blockIdx.x);
-    out[row*ny+col]=w[row]*v[col];
+	if(row<ny & col<nx & row>k & col>k){
+		out[row*ny+col]=w[row]*v[col];
+	}
 }
 
 __global__ void Dot_Product(float* w, float* v, float* hold, float out, int k, int size){
     int idx=threadIdx.x+(blockDim.x*blockIdx.x);
     int tid=threadIdx.x;
-    hold[idx]=w[idx]*v[idx];
+	if(idx>=k){
+		hold[idx]=w[idx]*v[idx];
+	}
     __syncthreads();
     float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
 
@@ -90,7 +94,7 @@ __global__ void TiledMult(float* g_A, float* g_B, float* g_C, const int Width)
 __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
     int idx = threadIdx.x+(blockDim.x*blockIdx.x);
     int tid = threadIdx.x;
-    if(idx>k){
+    if(idx>k & idx<=size){
         v[idx]=in[idx*nx+k];
     }
     __syncthreads();
