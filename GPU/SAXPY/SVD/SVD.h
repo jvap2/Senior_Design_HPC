@@ -4,9 +4,9 @@
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
-// #include <cuda.h>
-// #include <cuda_runtime.h>
-// #include <device_launch_parameters.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
 #include <math.h>
 #include <cmath>
 
@@ -39,4 +39,14 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx);
 void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx);
 void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
 void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
-
+__host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx);
+__global__ void final_L_2(float* sum_arr, int size, float* mu);
+__global__ void Compute_Beta(float* dot_array, float* beta, int size);
+__global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P, float scalar, int k, const int Size, const int ny);
+__global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, float scalar,int k, const int nx, const int ny);
+__global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx);
+__global__ void Mat_Add_Col(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k);
+__global__ void Mat_Add_Row(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k);
+__global__ void d_Dot_Product(float* w, float* v, float* hold, int k, int size);
+__global__ void Update_v(float* v, int k, float mu, int size);
+__global__ void d_Outer_Product(float* w, float* v, float* out, int k, int ny, int nx);

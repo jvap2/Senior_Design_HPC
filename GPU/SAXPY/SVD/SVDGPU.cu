@@ -2,7 +2,7 @@
 #include "GPUErrors.h"
 
 
-__global__ void Outer_Product(float* w, float* v, float* out, int k, int ny, int nx){
+__global__ void d_Outer_Product(float* w, float* v, float* out, int k, int ny, int nx){
     int row=threadIdx.y+(blockDim.y*blockIdx.y)+k;
     int col=threadIdx.x+(blockDim.x*blockIdx.x)+k;
 	if(row<ny & col<nx){
@@ -190,7 +190,7 @@ __global__ void final_L_2(float* sum_arr, int size, float* mu){
 }
 
 
-__host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+__host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
     float* d_A;
     float* d_p_row;
     float* d_p_col;
@@ -228,7 +228,16 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
     HandleCUDAError(cudaMalloc((void**) hold_dot_row, row_size));
     HandleCUDAError(cudaMalloc((void**) hold_L_2_col, col_size));
     HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
-
+	HandleCUDAError(cudaMemset(d_p_row,0,row_size));
+	HandleCUDAError(cudaMemset(d_p_col,0,col_size));
+	HandleCUDAError(cudaMemset(d_res_col,0,mat_size));
+	HandleCUDAError(cudaMemset(d_res_row,0,mat_size));
+	HandleCUDAError(cudaMemset(d_v_col,0,col_size));
+	HandleCUDAError(cudaMemset(d_v_row,0,row_size));
+	HandleCUDAError(cudaMemset(hold_dot_col,0,col_size));
+	HandleCUDAError(cudaMemset(hold_dot_row,0,row_size));
+	HandleCUDAError(cudaMemset(hold_L_2_col,0,col_size));
+	HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
     for(int i{}; i<nx;i++){
@@ -245,7 +254,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
 		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta,i,nx,ny);
 		cudaDeviceSynchronize();
-		Outer_Product<<<grid,block>>>(d_p_row,d_v_col,d_res_col,i,ny,nx);
+		d_Outer_Product<<<grid,block>>>(d_p_row,d_v_col,d_res_col,i,ny,nx);
 		cudaDeviceSynchronize();
 		Mat_Add_Row<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
@@ -261,13 +270,14 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
 		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta,i,nx,ny);
 		cudaDeviceSynchronize();
-		Outer_Product<<<grid,block>>>(d_v_col,d_p_row,d_res_col,i,ny,nx);
+		d_Outer_Product<<<grid,block>>>(d_v_col,d_p_row,d_res_col,i,ny,nx);
 		cudaDeviceSynchronize();
 		Mat_Add_Col<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
     }
 	HandleCUDAError(cudaMemcpy(A,d_A,mat_size,cudaMemcpyDeviceToHost));
 	SVDVerification(ref,A,ny,nx);
+	DisplayMatrix("GPU A",A,ny,nx);
 	HandleCUDAError(cudaFree(d_A));
 	HandleCUDAError(cudaFree(d_p_row));
 	HandleCUDAError(cudaFree(d_p_col));
@@ -282,47 +292,47 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
 }
 
 
-__host__ void Bidiag_Helper_2(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
-    float* d_A;
-    float* d_p_row;
-    float* d_p_col;
-    float* d_res_row;
-    float* d_res_col;
-    float* d_v_row;
-    float* d_v_col;
-    float* hold_dot_col;
-    float* hold_dot_row;
-    float* hold_L_2_col;
-    float* hold_L_2_row;
-    float L_2{};
-    int mat_size=nx*ny*sizeof(float);
-    int col_size=ny*sizeof(float);
-    int row_size=nx*sizeof(float);
-    int block_dim_1D_row=256;
-    int grid_dim_1D_row=nx/256+1;
-    int block_dim_1D_col=256;
-    int grid_dim_1D_col=ny/256+1;
-    int block_dim_x_2D=16;
-    int block_dim_y_2D=16;
-    int grid_dim_x_2D=nx/block_dim_x_2D+1;
-    int grid_dim_y_2D=ny/block_dim_y_2D+1;
-    HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
-    HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
-    HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
-    HandleCUDAError(cudaMalloc((void**) d_res_col, mat_size));
-    HandleCUDAError(cudaMalloc((void**) d_res_row, mat_size));
-    HandleCUDAError(cudaMalloc((void**) d_v_col, col_size));
-    HandleCUDAError(cudaMalloc((void**) d_v_row, row_size));
-    HandleCUDAError(cudaMalloc((void**) hold_dot_col, col_size));
-    HandleCUDAError(cudaMalloc((void**) hold_dot_row, row_size));
-    HandleCUDAError(cudaMalloc((void**) hold_L_2_col, col_size));
-    HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
+__host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+    // float* d_A;
+    // float* d_p_row;
+    // float* d_p_col;
+    // float* d_res_row;
+    // float* d_res_col;
+    // float* d_v_row;
+    // float* d_v_col;
+    // float* hold_dot_col;
+    // float* hold_dot_row;
+    // float* hold_L_2_col;
+    // float* hold_L_2_row;
+    // float L_2{};
+    // int mat_size=nx*ny*sizeof(float);
+    // int col_size=ny*sizeof(float);
+    // int row_size=nx*sizeof(float);
+    // int block_dim_1D_row=256;
+    // int grid_dim_1D_row=nx/256+1;
+    // int block_dim_1D_col=256;
+    // int grid_dim_1D_col=ny/256+1;
+    // int block_dim_x_2D=16;
+    // int block_dim_y_2D=16;
+    // int grid_dim_x_2D=nx/block_dim_x_2D+1;
+    // int grid_dim_y_2D=ny/block_dim_y_2D+1;
+    // HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
+    // HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
+    // HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
+    // HandleCUDAError(cudaMalloc((void**) d_res_col, mat_size));
+    // HandleCUDAError(cudaMalloc((void**) d_res_row, mat_size));
+    // HandleCUDAError(cudaMalloc((void**) d_v_col, col_size));
+    // HandleCUDAError(cudaMalloc((void**) d_v_row, row_size));
+    // HandleCUDAError(cudaMalloc((void**) hold_dot_col, col_size));
+    // HandleCUDAError(cudaMalloc((void**) hold_dot_row, row_size));
+    // HandleCUDAError(cudaMalloc((void**) hold_L_2_col, col_size));
+    // HandleCUDAError(cudaMalloc((void**) hold_L_2_row, row_size));
 
-    HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
+    // HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
-    for(int i{}; i<nx;i++){
-        d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
-    }
+    // for(int i{}; i<nx;i++){
+    //     d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
+    // }
 
 
 
