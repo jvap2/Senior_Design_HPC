@@ -3,9 +3,9 @@
 
 
 __global__ void Outer_Product(float* w, float* v, float* out, int k, int ny, int nx){
-    int row=threadIdx.y+(blockDim.y*blockIdx.y);
-    int col=threadIdx.x+(blockDim.x*blockIdx.x);
-	if(row<ny & col<nx & row>k & col>k){
+    int row=threadIdx.y+(blockDim.y*blockIdx.y)+k;
+    int col=threadIdx.x+(blockDim.x*blockIdx.x)+k;
+	if(row<ny & col<nx){
 		out[row*ny+col]=w[row]*v[col];
 	}
 }
@@ -63,8 +63,19 @@ __global__ void d_Dot_Product(float* w, float* v, float* hold, int k, int size){
 }
 
 __global__ void Mat_Add_Row(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k){
-	int row=threadIdx.y+(blockDim.x*blockIdx.x)+k;
-	int col
+	int row=threadIdx.y+(blockDim.y*blockIdx.y)+k;
+	int col=threadIdx.x+(blockDim.x*blockIdx.x)+k;
+	if(row<ny & col<nx){
+		Mat_C[row*nx+col]=Mat_A[row*nx+col]+Mat_B[row*nx+col];
+	}
+}
+
+__global__ void Mat_Add_Col(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k){
+	int row=threadIdx.y+(blockDim.y*blockIdx.y)+k;
+	int col=threadIdx.x+(blockDim.x*blockIdx.x)+k+1;
+	if(row<ny & col<nx){
+		Mat_C[row*nx+col]=Mat_A[row*nx+col]+Mat_B[row*nx+col];
+	}
 }
 
 
@@ -102,16 +113,16 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
 }
 
 
-__global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, int k, const int Size) {
+__global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, float scalar,int k, const int nx, const int ny) {
 	int row = threadIdx.x + (blockDim.x * blockIdx.x)+k;//We are providing this automatic variable to allow each thread to identify its location
 	//Each thread will calculate each entry in our resulting vector
 	//To do so, each thread will extract a row of g_Matrix to do with the vector g_V
 	float fSum = 0.0f;//We create an automatic variable fSum for each thread to lower memory accesses in the for loop
 	//We are going to use fSum instead of writing g_P[row]+=....
-	if (row < Size) {
+	if (row < ny) {
 		//We are trying to ensure we are not using more threads than data we have
-		for (int j=k+1; j < Size;j++) {
-			fSum += g_Matrix[row * Size + j] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
+		for (int j=k+1; j < nx;j++) {
+			fSum += g_Matrix[row * nx + j] * g_V[j];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
 		}
 		g_P[row] = fSum;//We now assign the row_th entry of g_P the value fSum, i.e., our dot product
 	}
@@ -204,6 +215,8 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
     int block_dim_y_2D=16;
     int grid_dim_x_2D=nx/block_dim_x_2D+1;
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
+	dim3 block(block_dim_y_2D,block_dim_x_2D);
+	dim3 grid(grid_dim_y_2D,grid_dim_x_2D);
     HandleCUDAError(cudaMalloc((void**) d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) d_p_col, col_size));
@@ -219,21 +232,53 @@ __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float*
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
     for(int i{}; i<nx;i++){
+		int j=i+1;
         d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(A,d_v_col,hold_L_2_col,i,ny,nx);
+		cudaDeviceSynchronize();
 		final_L_2<<<1,grid_dim_1D_col>>>(hold_L_2_col,grid_dim_1D_col,&mu);
+		cudaDeviceSynchronize();
 		Update_v<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,i,mu,ny);
+		cudaDeviceSynchronize();
 		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,d_v_col,hold_dot_col,i,ny);
+		cudaDeviceSynchronize();
 		Compute_Beta<<<1,grid_dim_1D_col>>>(hold_dot_col,&beta,grid_dim_1D_col);
+		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta,i,nx,ny);
-
-
-
+		cudaDeviceSynchronize();
+		Outer_Product<<<grid,block>>>(d_p_row,d_v_col,d_res_col,i,ny,nx);
+		cudaDeviceSynchronize();
+		Mat_Add_Row<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
+		cudaDeviceSynchronize();
+		d_L_2<<<grid_dim_1D_row,block_dim_1D_row>>>(A,d_v_row,hold_L_2_row,j,nx,nx);
+		cudaDeviceSynchronize();
+		final_L_2<<<1,grid_dim_1D_row>>>(hold_L_2_row,grid_dim_1D_row,&mu);
+		cudaDeviceSynchronize();
+		Update_v<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,j,mu,nx);
+		cudaDeviceSynchronize();
+		d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,d_v_row,hold_dot_row,j,nx);
+		cudaDeviceSynchronize();
+		Compute_Beta<<<1,grid_dim_1D_row>>>(hold_dot_row,&beta,grid_dim_1D_row);
+		cudaDeviceSynchronize();
+		Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta,i,nx,ny);
+		cudaDeviceSynchronize();
+		Outer_Product<<<grid,block>>>(d_v_col,d_p_row,d_res_col,i,ny,nx);
+		cudaDeviceSynchronize();
+		Mat_Add_Col<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
+		cudaDeviceSynchronize();
     }
-
-
-
-
-
+	HandleCUDAError(cudaMemcpy(A,d_A,mat_size,cudaMemcpyDeviceToHost));
+	SVDVerification(ref,A,ny,nx);
+	HandleCUDAError(cudaFree(d_A));
+	HandleCUDAError(cudaFree(d_p_row));
+	HandleCUDAError(cudaFree(d_p_col));
+	HandleCUDAError(cudaFree(d_res_col));
+	HandleCUDAError(cudaFree(d_res_row));
+	HandleCUDAError(cudaFree(d_v_col));
+	HandleCUDAError(cudaFree(d_v_row));
+	HandleCUDAError(cudaFree(hold_dot_col));
+	HandleCUDAError(cudaFree(hold_dot_row));
+	HandleCUDAError(cudaFree(hold_L_2_col));
+	HandleCUDAError(cudaFree(hold_L_2_row));
 }
 
 
