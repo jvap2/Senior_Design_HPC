@@ -213,6 +213,28 @@ __global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P
 	}
 }
 
+__global__ void Compute_Beta(float* dot_array, float beta, int size){
+	int tid = threadIdx.x;
+	float* blockAddress = dot_array+ (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
+	//Perform the interleaved reduction, used to reduce divergence.
+	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
+	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+	{
+		if (tid < stride && tid + stride < size)
+		{
+			//tid<stride ensures we do not try to access memory past the vector allocated to the block
+			//tid+stride<size allows for vector sizes less than blockDim
+			blockAddress[tid] += blockAddress[tid + stride];
+		}
+		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
+	}
+	if (tid == 0)
+	{
+		beta= -2/blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
+		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
+	}
+}
+
 
 __host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     float* d_A;
