@@ -13,7 +13,6 @@ __global__ void d_Outer_Product(float* w, float* v, float* out, int k, int ny, i
 __global__ void Update_v(float* v, int k, float* mu, int size){
 	float s{};
 	float v_start{};
-	int tid=threadIdx.x;
 	int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
 	if(idx<size && idx!=k){
 		v_start=v[k];
@@ -28,7 +27,7 @@ __global__ void Update_v(float* v, int k, float* mu, int size){
 		}
 		float beta=v_start+s*(*mu);
 		if(fabsf(beta)>1e-6){
-			v[idx]/=(v_start+s*(*mu));
+			v[idx]/=beta;
 		}
 	}
 	if(idx==k){
@@ -186,7 +185,8 @@ __global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P
 
 __global__ void Compute_Beta(float* dot_array, float* beta, int size){
 	int tid = threadIdx.x;
-	float* blockAddress = dot_array + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
+	// float* blockAddress = dot_array + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
+	float* blockAddress = dot_array;
 	//Perform the interleaved reduction, used to reduce divergence.
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
@@ -199,7 +199,7 @@ __global__ void Compute_Beta(float* dot_array, float* beta, int size){
 		}
 		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
 	}
-	if (tid == 0)
+	if (tid == 0 && blockAddress[tid]!=0)
 	{
 		*(beta)= -2/blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
 		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
@@ -245,8 +245,8 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 	float* beta_col{};
 	float* mu_row{};
 	float* beta_row{};
-	float temp[nx];
-	// float temp{};
+	float temp_vec[ny];
+	float temp[1];
     int mat_size=nx*ny*sizeof(float);
     int col_size=ny*sizeof(float);
     int row_size=nx*sizeof(float);
@@ -299,8 +299,8 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 		HandleCUDAError(cudaMemset(hold_L_2_col,0,col_size));
 		HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
 		HandleCUDAError(cudaMemset(mu_col,0,sizeof(float)));
-		HandleCUDAError(cudaMemset(beta_col,0,sizeof(float)));
 		HandleCUDAError(cudaMemset(mu_row,0,sizeof(float)));
+		HandleCUDAError(cudaMemset(beta_col,0,sizeof(float)));
 		HandleCUDAError(cudaMemset(beta_row,0,sizeof(float)));
 		int j=i+1;
         d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,i,ny,nx);
@@ -336,11 +336,14 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 		Mat_Add_Col<<<grid,block>>>(d_A,d_res_row,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
     }
-	if(!HandleCUDAError(cudaMemcpy(temp,d_p_row,row_size,cudaMemcpyDeviceToHost))){
+	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_col,col_size,cudaMemcpyDeviceToHost))){
 		cout<<"cannot display"<<endl;
 	}
-	// cout<<"mu="<<(temp)<<endl;
-	DisplayMatrix("Outer",temp,nx,1);
+	if(!HandleCUDAError(cudaMemcpy(temp,beta_col,sizeof(float),cudaMemcpyDeviceToHost))){
+		cout<<"cannot display"<<endl;
+	}
+	cout<<"mu="<<(temp[0])<<endl;
+	DisplayMatrix("dot",temp_vec,ny,1);
 	HandleCUDAError(cudaMemcpy(A,d_A,mat_size,cudaMemcpyDeviceToHost));
 	SVDVerification(ref,A,ny,nx);
 	DisplayMatrix("GPU A",A,ny,nx);
@@ -364,7 +367,7 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 }
 
 
-__host__ void Bidiag_Helper_1(float* A, float* ref, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
+__host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     float* d_A;
     float* d_p_row;
     float* d_p_col;

@@ -39,6 +39,8 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx);
 void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx);
 void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
 void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx);
+
+__host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx);
 __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx);
 __global__ void final_L_2(float* sum_arr, int size, float* mu);
 __global__ void Compute_Beta(float* dot_array, float* beta, int size);
