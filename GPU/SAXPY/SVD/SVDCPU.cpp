@@ -184,7 +184,7 @@ void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v
 
 void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     //k<(nx-2)
-    for(int k=0; k<1; k++){
+    for(int k=0; k<(nx-2); k++){
         cout<<"House Row"<<endl;
         House_Row(A,p,res_1,v_1,k,ny,nx);
         cout<<"House Col"<<endl;
