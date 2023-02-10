@@ -155,7 +155,6 @@ void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     L_2(v,j,nx,mu);
     sign(v[j],s);
     beta=v[j]+s*mu;
-    cout<<"Beta= "<<beta<<endl;
     if(fabsf(beta)>=1e-6){
         for(int i=j+1;i<nx;i++){
             v[i]/=beta;
@@ -173,10 +172,8 @@ void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
 
 void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     for(int k=0; k<(nx); k++){
-        cout<<"House Row"<<endl;
         House_Row(A,p,res_1,v_1,k,ny,nx);
         if(k<=(nx-2)){
-            cout<<"House Col"<<endl;
             House_Col(A,p_2,res_2, v_2, k, ny, nx);
         }
     }
@@ -185,9 +182,7 @@ void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v
 void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     //k<(nx-2)
     for(int k=0; k<(nx-2); k++){
-        cout<<"House Row"<<endl;
         House_Row(A,p,res_1,v_1,k,ny,nx);
-        cout<<"House Col"<<endl;
         House_Col(A,p_2,res_2, v_2, k, ny, nx);
     }
 }

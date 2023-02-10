@@ -22,6 +22,7 @@ void cpuVectorAddition(float* A, float* B, float* C, int size);
 void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx);
 void IdentityMatrix(float* temp, int size);
 void ZeroVector(float *temp, const int size);
+void CopyMat(float *A, float*B, int ny, int nx);
 void L_2(float* temp, int k, int size, float& res);
 void sign(float x, float& res);
 void Copy_To_Row(float*A, float* vect,int k, int nx);

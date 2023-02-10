@@ -14,6 +14,19 @@ void InitializeMatrix(float *matrix, int ny, int nx)
 	}
 }
 
+void CopyMat(float *A, float*B, int ny, int nx){
+
+	for (int i = 0; i < ny; i++)
+	{
+		for (int j = 0; j < nx; j++)
+		{
+			B[j] = A[j];
+		}
+		A += nx;
+		B += nx;
+	}
+}
+
 void ZeroMatrix(float *temp, const int ny, const int nx)
 {
 	float *p = temp;
