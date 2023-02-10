@@ -15,7 +15,7 @@ using namespace cimg_library;
 
 //GPU Error Handling
 #include "GPUErrors.h"
-
+#define FALSE 0
 //CPU Functions
 float cpu__RGBtoGrayScale_Ver0(CImg<unsigned char>& rgbImg, CImg<unsigned char>& grayImg);
 //First argument is the image we have to pass, we are using reference as well so we are not copying everytime, hence why we pass
