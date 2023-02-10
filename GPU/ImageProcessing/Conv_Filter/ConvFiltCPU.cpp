@@ -1,7 +1,6 @@
 #include "ConvFilt.h"
 
 void Filter(CImg<unsigned char>& rgbImg, CImg<unsigned char>& blurImg, int v_off, int h_off){
-    auto start=high_resolution_clock::now();
     unsigned char filter_r;
     unsigned char filter_g;
     unsigned char filter_b;
