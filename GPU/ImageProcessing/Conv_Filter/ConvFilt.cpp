@@ -38,7 +38,7 @@ int main()
 	//CPU Version 0
 	Filter(imgRGB, imgBlur, 3,3);
 	
-    CImgDisplay dispRGB(imgBlur, "Color Image");
+    // CImgDisplay dispRGB(imgBlur, "Color Image");
 	//Display the GrayScale Image
 
 }
