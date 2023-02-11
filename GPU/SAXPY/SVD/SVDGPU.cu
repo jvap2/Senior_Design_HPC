@@ -258,8 +258,8 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
     int block_dim_y_2D=16;
     int grid_dim_x_2D=nx/block_dim_x_2D+1;
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
-	dim3 block(block_dim_y_2D,block_dim_x_2D);
-	dim3 grid(grid_dim_y_2D,grid_dim_x_2D);
+	dim3 block(block_dim_x_2D,block_dim_y_2D);
+	dim3 grid(grid_dim_x_2D,grid_dim_y_2D);
     HandleCUDAError(cudaMalloc((void**) &d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_col, col_size));
@@ -287,7 +287,7 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 	HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
-    for(int i{}; i<(3);i++){
+    for(int i{}; i<(nx-2);i++){
 		HandleCUDAError(cudaMemset(d_p_row,0,row_size));
 		HandleCUDAError(cudaMemset(d_p_col,0,col_size));
 		HandleCUDAError(cudaMemset(d_res_col,0,mat_size));
@@ -394,8 +394,8 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     int block_dim_y_2D=16;
     int grid_dim_x_2D=nx/block_dim_x_2D+1;
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
-	dim3 block(block_dim_y_2D,block_dim_x_2D);
-	dim3 grid(grid_dim_y_2D,grid_dim_x_2D);
+	dim3 block(block_dim_x_2D,block_dim_y_2D);
+	dim3 grid(grid_dim_x_2D,grid_dim_y_2D);
     HandleCUDAError(cudaMalloc((void**) &d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_col, col_size));
@@ -421,7 +421,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 	HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
-    for(int i{}; i<(nx);i++){
+    for(int i{}; i<(1);i++){
 		HandleCUDAError(cudaMemset(d_p_row,0,row_size));
 		HandleCUDAError(cudaMemset(d_p_col,0,col_size));
 		HandleCUDAError(cudaMemset(d_res_col,0,mat_size));

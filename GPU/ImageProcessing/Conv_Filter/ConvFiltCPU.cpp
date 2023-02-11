@@ -41,6 +41,35 @@ void Filter(CImg<unsigned char>& rgbImg, CImg<unsigned char>& blurImg, int v_off
     cout<<"Done"<<endl;
 }
 
+
+void Sharpen_Blue(CImg<unsigned char>& rgbImg, CImg<unsigned char>& blurImg, char* mask, int v_off, int h_off){
+    int sum_b{};
+    int h = rgbImg.height();
+	int w = rgbImg.width();
+    int stride=h*w;
+    int filt_size=v_off*h_off;
+    cout<<"Constructing Filter"<<endl;
+    int count = 0;
+    for (int y{}; y < h;y++) {
+		for (int x{};x < w;x++) {
+            for(int y_off{}; y_off<v_off;y_off++){
+                int row=y+y_off-(v_off/2);
+                for(int x_off{}; x_off<h_off;x_off++){
+                    int col=x+x_off-(h_off/2);
+                    if(col>=0 && row>=0 && row<h && col<w){
+                        sum_b+=(char)rgbImg(col,row,0,2)*mask[y_off*h_off+x_off];
+                    }
+                }
+            }
+            blurImg(x,y,0,2)=(char)sum_b;
+            sum_b=0;
+        }
+    count++;
+    }
+    cout<<"Done"<<endl;
+}
+
+
 void cpu__RGBtoGrayScale_Ver0(CImg<unsigned char>& rgbImg, CImg<unsigned char>& grayImg)
 {
 	int height = rgbImg.height();
