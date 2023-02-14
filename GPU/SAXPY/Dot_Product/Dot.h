@@ -13,3 +13,6 @@ using namespace std::chrono;
 
 #define RANGE_MAX 0.5
 #define RANGE_MIN -0.5
+
+void Generate_Vector(float* in, int size);
+void Verify(float GPU_dot, float CPU_dot);
