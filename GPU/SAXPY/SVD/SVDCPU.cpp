@@ -175,7 +175,7 @@ void House_Col(float* A, float* p, float* res, float* v, int k, int ny, int nx){
 void House_1(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v_1, float* v_2, int ny, int nx){
     for(int k=0; k<(nx); k++){
         House_Row(A,p,res_1,v_1,k,ny,nx);
-        if(k<=(nx-2)){
+        if(k<(nx-2)){
             House_Col(A,p_2,res_2, v_2, k, ny, nx);
         }
     }

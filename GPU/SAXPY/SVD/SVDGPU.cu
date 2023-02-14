@@ -207,7 +207,7 @@ __global__ void final_L_2(float* sum_arr, int size, float* mu){
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
 	{
-		if (tid < stride && tid + stride < size)
+		if (tid < stride)
 		{
 			//tid<stride ensures we do not try to access memory past the vector allocated to the block
 			//tid+stride<size allows for vector sizes less than blockDim
@@ -447,7 +447,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 		cudaDeviceSynchronize();
 		Mat_Add_Row<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
-		if(i<=nx-2){
+		if(i<(nx-2)){
 			HandleCUDAError(cudaMemset(d_p_row,0,row_size));
 			HandleCUDAError(cudaMemset(d_res_row,0,mat_size));
 			HandleCUDAError(cudaMemset(d_v_row,0,row_size));
@@ -476,7 +476,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_col,col_size,cudaMemcpyDeviceToHost))){
 		cout<<"cannot display"<<endl;
 	}
-	if(!HandleCUDAError(cudaMemcpy(&temp,mu_row,sizeof(float),cudaMemcpyDeviceToHost))){
+	if(!HandleCUDAError(cudaMemcpy(&temp,mu_col,sizeof(float),cudaMemcpyDeviceToHost))){
 		cout<<"cannot display"<<endl;
 	}
 	cout<<"mu="<<(temp)<<endl;
