@@ -16,14 +16,8 @@ __global__ void Update_v(float* v, int k, float* mu, int size){
 	int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
 	if(idx<size && idx!=k){
 		v_start=v[k];
-		if(v_start>0){
-			s=1.0f;
-		}
-		else if(v_start<0){
-			s=-1.0f;
-		}
-		else{
-			s=0.0;
+		if(fabsf(v_start)>1e-6){
+			s=v_start/fabsf(v_start);
 		}
 		float beta=v_start+s*(*mu);
 		if(fabsf(beta)>1e-6){
@@ -89,7 +83,7 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
     int idx = threadIdx.x+(blockDim.x*blockIdx.x)+k;// Push off by k in order to get elements k through n, or k through m
     int tid = threadIdx.x;
 	//Load the necessary section of A into the v vector, this will be used later
-	v[idx]=in[idx*nx+k];
+	v[idx]=in[idx*nx+k];// pass in the A[k:m,k] to v
     __syncthreads();
     hold[idx]=powf(v[idx],2.0f);//Update hold rather than v so we can use v in the next step
     __syncthreads();
@@ -208,7 +202,7 @@ __global__ void Compute_Beta(float* dot_array, float* beta, int size){
 
 __global__ void final_L_2(float* sum_arr, int size, float* mu){
 	int tid = threadIdx.x;
-	float* blockAddress = sum_arr+ (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
+	float* blockAddress = sum_arr;//Use this to point to the start of the vector allocated to each block
 	//Perform the interleaved reduction, used to reduce divergence.
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
@@ -223,7 +217,7 @@ __global__ void final_L_2(float* sum_arr, int size, float* mu){
 	}
 	if (tid == 0)
 	{
-		*(mu)= sqrt(blockAddress[0]);//thread 0 will store the partial thread of the block based on the in place methodology
+		*(mu)= sqrtf(blockAddress[0]);//thread 0 will store the partial thread of the block based on the in place methodology
 		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
 	}
 }
@@ -336,7 +330,7 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 		Mat_Add_Col<<<grid,block>>>(d_A,d_res_row,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
     }
-	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_col,col_size,cudaMemcpyDeviceToHost))){
+	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_row,col_size,cudaMemcpyDeviceToHost))){
 		cout<<"cannot display"<<endl;
 	}
 	if(!HandleCUDAError(cudaMemcpy(temp,beta_col,sizeof(float),cudaMemcpyDeviceToHost))){
@@ -379,10 +373,12 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     float* hold_dot_row;
     float* hold_L_2_col;
     float* hold_L_2_row;
-    float* mu{};
-	float* beta{};
-	float temp[ny];
-	// float temp{};
+    float* mu_col{};
+	float* beta_col{};
+	float* mu_row{};
+	float* beta_row{};
+	float temp_vec[ny];
+	float temp;
     int mat_size=nx*ny*sizeof(float);
     int col_size=ny*sizeof(float);
     int row_size=nx*sizeof(float);
@@ -396,6 +392,18 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
 	dim3 block(block_dim_x_2D,block_dim_y_2D);
 	dim3 grid(grid_dim_x_2D,grid_dim_y_2D);
+	cout << "\t2D Grid Dimension" << endl;
+	cout << "\tNumber of Blocks along X dimension: " << grid.x << endl;
+	cout << "\tNumber of Blocks along Y dimension: " << grid.y << endl;
+	cout << "\t2D Block Dimension" << endl;
+	cout << "\tNumber of threads along X dimension: " << block.x << endl;
+	cout << "\tNumber of threads along Y dimension: " << block.y << endl;
+	cout << "\t1D Grid Dimension" << endl;
+	cout << "\tNumber of Blocks along col dimension: " << grid_dim_1D_col << endl;
+	cout << "\tNumber of Blocks along row dimension: " << grid_dim_1D_row << endl;
+	cout << "\t2D Block Dimension" << endl;
+	cout << "\tNumber of threads along col dimension: " << block_dim_1D_col << endl;
+	cout << "\tNumber of threads along row dimension: " << block_dim_1D_row << endl;
     HandleCUDAError(cudaMalloc((void**) &d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_col, col_size));
@@ -407,72 +415,76 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     HandleCUDAError(cudaMalloc((void**) &hold_dot_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_col, col_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_row, row_size));
-    HandleCUDAError(cudaMalloc((void**) &mu, sizeof(float)));
-    HandleCUDAError(cudaMalloc((void**) &beta, sizeof(float)));
-	HandleCUDAError(cudaMemset(d_p_row,0,row_size));
-	HandleCUDAError(cudaMemset(d_p_col,0,col_size));
-	HandleCUDAError(cudaMemset(d_res_col,0,mat_size));
-	HandleCUDAError(cudaMemset(d_res_row,0,mat_size));
-	HandleCUDAError(cudaMemset(d_v_col,0,col_size));
-	HandleCUDAError(cudaMemset(d_v_row,0,row_size));
-	HandleCUDAError(cudaMemset(hold_dot_col,0,col_size));
-	HandleCUDAError(cudaMemset(hold_dot_row,0,row_size));
-	HandleCUDAError(cudaMemset(hold_L_2_col,0,col_size));
-	HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
+    HandleCUDAError(cudaMalloc((void**) &mu_col, sizeof(float)));
+    HandleCUDAError(cudaMalloc((void**) &beta_col, sizeof(float)));
+	HandleCUDAError(cudaMalloc((void**) &mu_row, sizeof(float)));
+    HandleCUDAError(cudaMalloc((void**) &beta_row, sizeof(float)));
+
     HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
 
-    for(int i{}; i<(1);i++){
-		HandleCUDAError(cudaMemset(d_p_row,0,row_size));
+    for(int i{}; i<(nx);i++){
 		HandleCUDAError(cudaMemset(d_p_col,0,col_size));
 		HandleCUDAError(cudaMemset(d_res_col,0,mat_size));
-		HandleCUDAError(cudaMemset(d_res_row,0,mat_size));
 		HandleCUDAError(cudaMemset(d_v_col,0,col_size));
-		HandleCUDAError(cudaMemset(d_v_row,0,row_size));
 		HandleCUDAError(cudaMemset(hold_dot_col,0,col_size));
-		HandleCUDAError(cudaMemset(hold_dot_row,0,row_size));
 		HandleCUDAError(cudaMemset(hold_L_2_col,0,col_size));
-		HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
+		HandleCUDAError(cudaMemset(mu_col,0,sizeof(float)));
+		HandleCUDAError(cudaMemset(beta_col,0,sizeof(float)));
 		int j=i+1;
         d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,i,ny,nx);
 		cudaDeviceSynchronize();
-		final_L_2<<<1,grid_dim_1D_col>>>(hold_L_2_col,grid_dim_1D_col,mu);
+		final_L_2<<<1,grid_dim_1D_col>>>(hold_L_2_col,grid_dim_1D_col,mu_col);
 		cudaDeviceSynchronize();
-		Update_v<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,i,mu,ny);
+		Update_v<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,i,mu_col,ny);
 		cudaDeviceSynchronize();
 		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,hold_dot_col,i,ny);
 		cudaDeviceSynchronize();
-		Compute_Beta<<<1,grid_dim_1D_col>>>(hold_dot_col,beta,grid_dim_1D_col);
+		Compute_Beta<<<1,grid_dim_1D_col>>>(hold_dot_col,beta_col,grid_dim_1D_col);
 		cudaDeviceSynchronize();
-		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta,i,nx,ny);
+		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta_col,i,nx,ny);
 		cudaDeviceSynchronize();
 		d_Outer_Product<<<grid,block>>>(d_p_row,d_v_col,d_res_col,i,ny,nx);
 		cudaDeviceSynchronize();
 		Mat_Add_Row<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
-		if(i<=(nx-2)){
+		if(i<=nx-2){
+			HandleCUDAError(cudaMemset(d_p_row,0,row_size));
+			HandleCUDAError(cudaMemset(d_res_row,0,mat_size));
+			HandleCUDAError(cudaMemset(d_v_row,0,row_size));
+			HandleCUDAError(cudaMemset(hold_dot_row,0,row_size));
+			HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
+			HandleCUDAError(cudaMemset(mu_row,0,sizeof(float)));
+			HandleCUDAError(cudaMemset(beta_row,0,sizeof(float)));
 			d_L_2_CH<<<grid_dim_1D_row,block_dim_1D_row>>>(d_A,d_v_row,hold_L_2_row,i,nx,nx);
 			cudaDeviceSynchronize();
-			final_L_2<<<1,grid_dim_1D_row>>>(hold_L_2_row,grid_dim_1D_row,mu);
+			final_L_2<<<1,grid_dim_1D_row>>>(hold_L_2_row,grid_dim_1D_row,mu_row);
 			cudaDeviceSynchronize();
-			Update_v<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,j,mu,nx);
+			Update_v<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,j,mu_row,nx);
 			cudaDeviceSynchronize();
 			d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,hold_dot_row,j,nx);
 			cudaDeviceSynchronize();
-			Compute_Beta<<<1,grid_dim_1D_row>>>(hold_dot_row,beta,grid_dim_1D_row);
+			Compute_Beta<<<1,grid_dim_1D_row>>>(hold_dot_row,beta_row,grid_dim_1D_row);
 			cudaDeviceSynchronize();
-			Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_row,d_p_row,beta,i,nx,ny);
+			Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_row,d_p_col,beta_row,i,nx,ny); //should this be d_p_col or d_p_row?
 			cudaDeviceSynchronize();
-			d_Outer_Product<<<grid,block>>>(d_v_row,d_p_row,d_res_col,i,ny,nx);
+			d_Outer_Product<<<grid,block>>>(d_v_row,d_p_col,d_res_row,i,ny,nx);
 			cudaDeviceSynchronize();
-			Mat_Add_Col<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
+			Mat_Add_Col<<<grid,block>>>(d_A,d_res_row,d_A,ny,nx,i);
 			cudaDeviceSynchronize();
 		}
     }
-	// if(!HandleCUDAError(cudaMemcpy(temp,d_p_row,col_size,cudaMemcpyDeviceToHost))){
-	// 	cout<<"cannot display"<<endl;
-	// }
-	// // cout<<"mu="<<(temp)<<endl;
-	// DisplayMatrix("w",temp,ny,1);
+	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_col,col_size,cudaMemcpyDeviceToHost))){
+		cout<<"cannot display"<<endl;
+	}
+	if(!HandleCUDAError(cudaMemcpy(&temp,mu_row,sizeof(float),cudaMemcpyDeviceToHost))){
+		cout<<"cannot display"<<endl;
+	}
+	cout<<"mu="<<(temp)<<endl;
+
+	for(int j{}; j<ny; j++){
+		cout<<temp_vec[j]<<endl;
+	}
+
 	HandleCUDAError(cudaMemcpy(A,d_A,mat_size,cudaMemcpyDeviceToHost));
 	SVDVerification(ref,A,ny,nx);
 	DisplayMatrix("GPU A",A,ny,nx);
@@ -487,6 +499,11 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 	HandleCUDAError(cudaFree(hold_dot_row));
 	HandleCUDAError(cudaFree(hold_L_2_col));
 	HandleCUDAError(cudaFree(hold_L_2_row));
+	HandleCUDAError(cudaFree(mu_col));
+	HandleCUDAError(cudaFree(mu_row));
+	HandleCUDAError(cudaFree(beta_col));
+	HandleCUDAError(cudaFree(beta_row));
+
 	cudaDeviceReset();
 
 }

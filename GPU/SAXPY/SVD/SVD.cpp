@@ -12,8 +12,8 @@ int main(){
     v_2=new float[nx];
     // A = new float[ny*nx];
     // h_A= new float[ny*nx];
-    InitializeMatrix(A,ny,ny);
-    CopyMat(A,h_A,ny,nx);
+    // InitializeMatrix(A,ny,ny);
+    // CopyMat(A,h_A,ny,nx);
     // //float A[]={4, 3, 0, 2, 5,2, 1, 2, 1, 6,4, 4, 0, 3, 0,5, 6, 1, 3, 7};
     float A[]= {0.59828957, 0.29664485, 0.9068596,  0.80018892, 0.12259314, 0.34763641,0.90453219, 
     0.73585238, 0.16374527, 0.12865663, 0.06864848, 0.50134387,0.31981082, 0.77745353, 0.41087337, 
@@ -28,8 +28,8 @@ int main(){
     0.28577958,0.36770176, 0.12763882, 0.73809877, 0.76038764, 0.47508413, 0.17154537,0.79979308, 
     0.93534805, 0.62592693, 0.65035382, 0.80558099, 0.18553789,0.94381072, 0.27746098, 0.78284145, 
     0.70678616, 0.37961537, 0.84736446};
-    CopyMat(A,h_A,ny,nx);
-    DisplayMatrix("Normal A", A, ny, nx);
+    // CopyMat(A,h_A,ny,nx);
+    // DisplayMatrix("Normal A", A, ny, nx);
     if(ny>nx){
         House_1(A,p,p_2,res_1,res_2, v_1, v_2, ny,nx);
         Bidiag_Helper_1(h_A, A,ny,nx);
