@@ -5,6 +5,7 @@ import ctypes
 def HouseHolder_Copy_Row(A,k):
     v=np.copy(A[k:,k])
     mu=v[0]+(v[0]/abs(v[0]))*np.linalg.norm(v,2)
+    print(np.linalg.norm(v,2))
     if abs(mu)>=1e-6:
         v[1:]/=mu
     v[0]=1.0
@@ -27,7 +28,6 @@ def HouseHolder_Row(A,v,k):
 
 def HouseHolder_Col(A,v,k):
     beta=-2/np.dot(v,v)
-    print(beta)
     w=beta*np.matmul(A[k:,k+1:],v)
     out=np.outer(w,v)
     return out
@@ -46,11 +46,16 @@ print("Original Matrix\n", Mat)
 
 
 for i in range(col):
-    v=HouseHolder_Copy_Row(Mat,i)
-    outer=HouseHolder_Row(Mat,v,i)
-    Mat[i:,i:]+=outer
-    if(i<=col-2):
-        v=HouseHolder_Copy_Col(Mat,i)
-        outer=HouseHolder_Col(Mat,v,i)
-        Mat[i:,i+1:]+=outer
+    if col>row:
+        v=HouseHolder_Copy_Row(Mat,i)
+        outer=HouseHolder_Row(Mat,v,i)
+        Mat[i:,i:]+=outer
+        print(Mat)
+        print('\n')
+        if(i<col-2):
+            v=HouseHolder_Copy_Col(Mat,i)
+            outer=HouseHolder_Col(Mat,v,i)
+            Mat[i:,i+1:]+=outer
+            print(Mat)
+            print('\n')
 print("Final Matrix\n", Mat)

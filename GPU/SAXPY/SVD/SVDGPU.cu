@@ -83,6 +83,9 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
     int idx = threadIdx.x+(blockDim.x*blockIdx.x)+k;// Push off by k in order to get elements k through n, or k through m
     int tid = threadIdx.x;
 	//Load the necessary section of A into the v vector, this will be used later
+	if(idx>=size){
+		return;
+    }
 	v[idx]=in[idx*nx+k];// pass in the A[k:m,k] to v
     __syncthreads();
     hold[idx]=powf(v[idx],2.0f);//Update hold rather than v so we can use v in the next step
@@ -90,9 +93,6 @@ __global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
     float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
 	//Perform the interleaved reduction, used to reduce divergence.
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
-	if(idx>=size){
-		return;
-    }
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
 	{
 		if (tid < stride && tid + stride < size)
@@ -473,7 +473,7 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 			cudaDeviceSynchronize();
 		}
     }
-	if(!HandleCUDAError(cudaMemcpy(temp_vec,d_v_col,col_size,cudaMemcpyDeviceToHost))){
+	if(!HandleCUDAError(cudaMemcpy(temp_vec,hold_L_2_col,col_size,cudaMemcpyDeviceToHost))){
 		cout<<"cannot display"<<endl;
 	}
 	if(!HandleCUDAError(cudaMemcpy(&temp,mu_col,sizeof(float),cudaMemcpyDeviceToHost))){
@@ -486,6 +486,8 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 	}
 
 	HandleCUDAError(cudaMemcpy(A,d_A,mat_size,cudaMemcpyDeviceToHost));
+
+
 	SVDVerification(ref,A,ny,nx);
 	DisplayMatrix("GPU A",A,ny,nx);
 	HandleCUDAError(cudaFree(d_A));
