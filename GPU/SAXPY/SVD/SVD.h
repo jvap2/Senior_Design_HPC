@@ -43,14 +43,14 @@ void House_2(float*A, float* p, float* p_2, float* res_1, float* res_2, float* v
 
 __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx);
 __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx);
-__global__ void final_L_2(float* sum_arr, int size, float* mu);
-__global__ void Compute_Beta(float* dot_array, float* beta, int size);
+__global__ void d_Commit_L_2(float* g_Partial_Sum, float* mu);
+__global__ void Compute_Beta(float* dot_array, float* beta);
 __global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P, float* scalar, int k, const int nx, const int ny) ;
 __global__ void Aug_MatrixVectorMult_Col(float* g_Matrix, float* g_V, float* g_P, float* scalar,int k, const int nx, const int ny);
-__global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx);
+__global__ void d_L_2_Partial_Reduction(float* in, float* d_v,float* hold_vect,float* g_PartialSum, int k,int size,int nx);
 __global__ void Mat_Add_Col(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k);
 __global__ void Mat_Add_Row(float* Mat_A, float* Mat_B, float* Mat_C, int ny, int nx, int k);
-__global__ void d_Dot_Product(float* v, float* hold, int k, int size);
+__global__ void d_Dot_Product(float* v, float* hold, float* d_psum, int k, int size);
 __global__ void Update_v(float* v, int k, float* mu, int size);
 __global__ void d_Outer_Product(float* w, float* v, float* out, int k, int ny, int nx);
-__global__ void d_L_2_CH(float* in, float* v, float* hold, int k, int size,int nx);
+__global__ void d_L_2_Partial_Reduction_CH(float* in, float* d_v, float* hold_vect,float* g_PartialSum, int k, int size,int nx);

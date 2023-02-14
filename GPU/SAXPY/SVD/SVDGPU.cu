@@ -31,7 +31,7 @@ __global__ void Update_v(float* v, int k, float* mu, int size){
 
 }
 
-__global__ void d_Dot_Product(float* v, float* hold, int k, int size){
+__global__ void d_Dot_Product(float* v, float* hold, float* d_psum, int k, int size){
     int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
     int tid=threadIdx.x;
 	hold[idx]=powf(v[idx],2.0f);
@@ -55,7 +55,7 @@ __global__ void d_Dot_Product(float* v, float* hold, int k, int size){
 	}
 	if (tid == 0)
 	{
-		hold[blockIdx.x] = blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
+		d_psum[blockIdx.x] = blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
 		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
 	}
     //Commit on the CPU
@@ -75,72 +75,6 @@ __global__ void Mat_Add_Col(float* Mat_A, float* Mat_B, float* Mat_C, int ny, in
 	if(row<ny & col<nx){
 		Mat_C[row*nx+col]=Mat_A[row*nx+col]+Mat_B[row*nx+col];
 	}
-}
-
-
-
-__global__ void d_L_2(float* in, float* v, float* hold, int k, int size,int nx){
-    int idx = threadIdx.x+(blockDim.x*blockIdx.x)+k;// Push off by k in order to get elements k through n, or k through m
-    int tid = threadIdx.x;
-	//Load the necessary section of A into the v vector, this will be used later
-	if(idx>=size){
-		return;
-    }
-	v[idx]=in[idx*nx+k];// pass in the A[k:m,k] to v
-    __syncthreads();
-    hold[idx]=powf(v[idx],2.0f);//Update hold rather than v so we can use v in the next step
-    __syncthreads();
-    float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
-	//Perform the interleaved reduction, used to reduce divergence.
-	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
-	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
-	{
-		if (tid < stride && tid + stride < size)
-		{
-			//tid<stride ensures we do not try to access memory past the vector allocated to the block
-			//tid+stride<size allows for vector sizes less than blockDim
-			blockAddress[tid] += blockAddress[tid + stride];
-		}
-		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
-	}
-	if (tid == 0)
-	{
-		hold[blockIdx.x] = blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
-		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
-	}
-
-}
-
-__global__ void d_L_2_CH(float* in, float* v, float* hold, int k, int size,int nx){
-    int idx = threadIdx.x+(blockDim.x*blockIdx.x)+k+1;// Push off by k in order to get elements k through n, or k through m
-    int tid = threadIdx.x;
-	//Load the necessary section of A into the v vector, this will be used later
-	v[idx]=in[k*nx+idx];
-    __syncthreads();
-    hold[idx]=powf(v[idx],2.0f);//Update hold rather than v so we can use v in the next step
-    __syncthreads();
-    float* blockAddress = hold + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
-	//Perform the interleaved reduction, used to reduce divergence.
-	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
-	if(idx>=size){
-		return;
-    }
-	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
-	{
-		if (tid < stride && tid + stride < size)
-		{
-			//tid<stride ensures we do not try to access memory past the vector allocated to the block
-			//tid+stride<size allows for vector sizes less than blockDim
-			blockAddress[tid] += blockAddress[tid + stride];
-		}
-		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
-	}
-	if (tid == 0)
-	{
-		hold[blockIdx.x] = blockAddress[0];//thread 0 will store the partial thread of the block based on the in place methodology
-		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
-	}
-
 }
 
 
@@ -177,7 +111,7 @@ __global__ void Aug_MatrixVectorMult_Row(float* g_Matrix, float* g_V, float* g_P
 	}
 }
 
-__global__ void Compute_Beta(float* dot_array, float* beta, int size){
+__global__ void Compute_Beta(float* dot_array, float* beta){
 	int tid = threadIdx.x;
 	// float* blockAddress = dot_array + (blockIdx.x * blockDim.x);//Use this to point to the start of the vector allocated to each block
 	float* blockAddress = dot_array;
@@ -185,7 +119,7 @@ __global__ void Compute_Beta(float* dot_array, float* beta, int size){
 	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
 	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
 	{
-		if (tid < stride && tid + stride < size)
+		if (tid < stride)
 		{
 			//tid<stride ensures we do not try to access memory past the vector allocated to the block
 			//tid+stride<size allows for vector sizes less than blockDim
@@ -200,12 +134,19 @@ __global__ void Compute_Beta(float* dot_array, float* beta, int size){
 	}
 }
 
-__global__ void final_L_2(float* sum_arr, int size, float* mu){
-	int tid = threadIdx.x;
-	float* blockAddress = sum_arr;//Use this to point to the start of the vector allocated to each block
-	//Perform the interleaved reduction, used to reduce divergence.
-	//Start adding elements blockDim.x apart, store in place and then half the stride and continue until stride=1
-	for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+
+__global__ void d_L_2_Partial_Reduction(float* in, float* d_v,float* hold_vect,float* g_PartialSum, int k,int size,int nx){
+    int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k;
+    int tid=threadIdx.x;
+    if (idx>=size){
+        return;
+    }
+	d_v[idx]=in[idx*nx+k];
+	__syncthreads();
+    hold_vect[idx]=d_v[idx]*d_v[idx];
+    __syncthreads();
+    float* blockAddress=hold_vect+(blockDim.x*blockIdx.x);
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
 	{
 		if (tid < stride)
 		{
@@ -215,11 +156,53 @@ __global__ void final_L_2(float* sum_arr, int size, float* mu){
 		}
 		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
 	}
-	if (tid == 0)
+    if(tid==0){
+        g_PartialSum[blockIdx.x]=blockAddress[0];
+    }
+}
+
+__global__ void d_L_2_Partial_Reduction_CH(float* in, float* d_v, float* hold_vect,float* g_PartialSum, int k, int size,int nx){
+    int idx=threadIdx.x+(blockDim.x*blockIdx.x)+k+1;
+    int tid=threadIdx.x;
+    if (idx>=size){
+        return;
+    }
+	d_v[idx]=in[k*nx+idx];
+    __syncthreads();
+    hold_vect[idx]=d_v[idx]*d_v[idx];
+    __syncthreads();
+    float* blockAddress=hold_vect+(blockDim.x*blockIdx.x);
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
 	{
-		*(mu)= sqrtf(blockAddress[0]);//thread 0 will store the partial thread of the block based on the in place methodology
-		//Hence, we store the first element of blockAddress in partial sum of each blockIdx.x 
+		if (tid < stride)
+		{
+			//tid<stride ensures we do not try to access memory past the vector allocated to the block
+			//tid+stride<size allows for vector sizes less than blockDim
+			blockAddress[tid] += blockAddress[tid + stride];
+		}
+		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
 	}
+    if(tid==0){
+        g_PartialSum[blockIdx.x]=blockAddress[0];
+    }
+}
+
+__global__ void d_Commit_L_2(float* g_Partial_Sum, float* mu){
+    int tid=threadIdx.x;
+    float* blockAddress=g_Partial_Sum;
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+	{
+		if (tid < stride)
+		{
+			//tid<stride ensures we do not try to access memory past the vector allocated to the block
+			//tid+stride<size allows for vector sizes less than blockDim
+			blockAddress[tid] += blockAddress[tid + stride];
+		}
+		__syncthreads();//Make all of the threads wait to go to the next iteration so the values are up to date
+	}
+    if(tid==0){
+        *(mu)=sqrtf(blockAddress[0]);
+    }
 }
 
 
@@ -239,6 +222,10 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 	float* beta_col{};
 	float* mu_row{};
 	float* beta_row{};
+	float* d_P_sum_L_2_col;
+	float* d_P_sum_L_2_row;
+	float* d_P_sum_dot_col;
+	float* d_P_sum_dot_row;
 	float temp_vec[ny];
 	float temp[1];
     int mat_size=nx*ny*sizeof(float);
@@ -254,6 +241,8 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
 	dim3 block(block_dim_x_2D,block_dim_y_2D);
 	dim3 grid(grid_dim_x_2D,grid_dim_y_2D);
+	int col_psum_size=sizeof(float)*grid_dim_1D_col;
+	int row_psum_size=sizeof(float)*grid_dim_1D_row;
     HandleCUDAError(cudaMalloc((void**) &d_A, mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &d_p_col, col_size));
@@ -265,6 +254,11 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
     HandleCUDAError(cudaMalloc((void**) &hold_dot_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_col, col_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_row, row_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_dot_col, col_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_dot_row, row_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_L_2_col, col_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_L_2_row, row_psum_size));
+
     HandleCUDAError(cudaMalloc((void**) &mu_col, sizeof(float)));
     HandleCUDAError(cudaMalloc((void**) &beta_col, sizeof(float)));
 	HandleCUDAError(cudaMalloc((void**) &mu_row, sizeof(float)));
@@ -297,15 +291,15 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 		HandleCUDAError(cudaMemset(beta_col,0,sizeof(float)));
 		HandleCUDAError(cudaMemset(beta_row,0,sizeof(float)));
 		int j=i+1;
-        d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,i,ny,nx);
+        d_L_2_Partial_Reduction<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,d_P_sum_L_2_col,i,ny,nx);
 		cudaDeviceSynchronize();
-		final_L_2<<<1,grid_dim_1D_col>>>(hold_L_2_col,grid_dim_1D_col,mu_col);
+		d_Commit_L_2<<<1,grid_dim_1D_col>>>(d_P_sum_L_2_col,mu_col);
 		cudaDeviceSynchronize();
 		Update_v<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,i,mu_col,ny);
 		cudaDeviceSynchronize();
-		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,hold_dot_col,i,ny);
+		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,hold_dot_col,d_P_sum_dot_col,i,ny);
 		cudaDeviceSynchronize();
-		Compute_Beta<<<1,grid_dim_1D_col>>>(hold_dot_col,beta_col,grid_dim_1D_col);
+		Compute_Beta<<<1,grid_dim_1D_col>>>(d_P_sum_dot_col,beta_col);
 		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta_col,i,nx,ny);
 		cudaDeviceSynchronize();
@@ -313,15 +307,15 @@ __host__ void Bidiag_Helper_2(float* A, float* ref,  int ny, int nx){
 		cudaDeviceSynchronize();
 		Mat_Add_Row<<<grid,block>>>(d_A,d_res_col,d_A,ny,nx,i);
 		cudaDeviceSynchronize();
-		d_L_2_CH<<<grid_dim_1D_row,block_dim_1D_row>>>(d_A,d_v_row,hold_L_2_row,i,nx,nx);
+		d_L_2_Partial_Reduction_CH<<<grid_dim_1D_row,block_dim_1D_row>>>(d_A,d_v_row,hold_L_2_row,d_P_sum_L_2_row,i,nx,nx);
 		cudaDeviceSynchronize();
-		final_L_2<<<1,grid_dim_1D_row>>>(hold_L_2_row,grid_dim_1D_row,mu_row);
+		d_Commit_L_2<<<1,grid_dim_1D_row>>>(d_P_sum_L_2_row,mu_row);
 		cudaDeviceSynchronize();
 		Update_v<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,j,mu_row,nx);
 		cudaDeviceSynchronize();
-		d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,hold_dot_row,j,nx);
+		d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,hold_dot_row,d_P_sum_dot_row,j,nx);
 		cudaDeviceSynchronize();
-		Compute_Beta<<<1,grid_dim_1D_row>>>(hold_dot_row,beta_row,grid_dim_1D_row);
+		Compute_Beta<<<1,grid_dim_1D_row>>>(d_P_sum_dot_row,beta_row);
 		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_row,d_p_col,beta_row,i,nx,ny); //should this be d_p_col or d_p_row?
 		cudaDeviceSynchronize();
@@ -373,6 +367,10 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     float* hold_dot_row;
     float* hold_L_2_col;
     float* hold_L_2_row;
+	float* d_P_sum_L_2_col;
+	float* d_P_sum_L_2_row;
+	float* d_P_sum_dot_col;
+	float* d_P_sum_dot_row;
     float* mu_col{};
 	float* beta_col{};
 	float* mu_row{};
@@ -392,6 +390,8 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     int grid_dim_y_2D=ny/block_dim_y_2D+1;
 	dim3 block(block_dim_x_2D,block_dim_y_2D);
 	dim3 grid(grid_dim_x_2D,grid_dim_y_2D);
+	int col_psum_size=sizeof(float)*grid_dim_1D_col;
+	int row_psum_size=sizeof(float)*grid_dim_1D_row;
 	cout << "\t2D Grid Dimension" << endl;
 	cout << "\tNumber of Blocks along X dimension: " << grid.x << endl;
 	cout << "\tNumber of Blocks along Y dimension: " << grid.y << endl;
@@ -415,6 +415,10 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
     HandleCUDAError(cudaMalloc((void**) &hold_dot_row, row_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_col, col_size));
     HandleCUDAError(cudaMalloc((void**) &hold_L_2_row, row_size));
+	HandleCUDAError(cudaMalloc((void**) &d_P_sum_dot_col, col_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_dot_row, row_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_L_2_col, col_psum_size));
+    HandleCUDAError(cudaMalloc((void**) &d_P_sum_L_2_row, row_psum_size));
     HandleCUDAError(cudaMalloc((void**) &mu_col, sizeof(float)));
     HandleCUDAError(cudaMalloc((void**) &beta_col, sizeof(float)));
 	HandleCUDAError(cudaMalloc((void**) &mu_row, sizeof(float)));
@@ -430,16 +434,19 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 		HandleCUDAError(cudaMemset(hold_L_2_col,0,col_size));
 		HandleCUDAError(cudaMemset(mu_col,0,sizeof(float)));
 		HandleCUDAError(cudaMemset(beta_col,0,sizeof(float)));
+		HandleCUDAError(cudaMemset(d_P_sum_dot_col,0,col_psum_size));
+		HandleCUDAError(cudaMemset(d_P_sum_L_2_col,0,col_psum_size));
+
 		int j=i+1;
-        d_L_2<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,i,ny,nx);
+        d_L_2_Partial_Reduction<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,hold_L_2_col,d_P_sum_L_2_col,i,ny,nx);
 		cudaDeviceSynchronize();
-		final_L_2<<<1,grid_dim_1D_col>>>(hold_L_2_col,grid_dim_1D_col,mu_col);
+		d_Commit_L_2<<<1,grid_dim_1D_col>>>(d_P_sum_L_2_col,mu_col);
 		cudaDeviceSynchronize();
 		Update_v<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,i,mu_col,ny);
 		cudaDeviceSynchronize();
-		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,hold_dot_col,i,ny);
+		d_Dot_Product<<<grid_dim_1D_col,block_dim_1D_col>>>(d_v_col,hold_dot_col,d_P_sum_dot_col,i,ny);
 		cudaDeviceSynchronize();
-		Compute_Beta<<<1,grid_dim_1D_col>>>(hold_dot_col,beta_col,grid_dim_1D_col);
+		Compute_Beta<<<1,grid_dim_1D_col>>>(d_P_sum_dot_col,beta_col);
 		cudaDeviceSynchronize();
 		Aug_MatrixVectorMult_Row<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_col,d_p_row,beta_col,i,nx,ny);
 		cudaDeviceSynchronize();
@@ -455,15 +462,17 @@ __host__ void Bidiag_Helper_1(float* A, float* ref,  int ny, int nx){
 			HandleCUDAError(cudaMemset(hold_L_2_row,0,row_size));
 			HandleCUDAError(cudaMemset(mu_row,0,sizeof(float)));
 			HandleCUDAError(cudaMemset(beta_row,0,sizeof(float)));
-			d_L_2_CH<<<grid_dim_1D_row,block_dim_1D_row>>>(d_A,d_v_row,hold_L_2_row,i,nx,nx);
+			HandleCUDAError(cudaMemset(d_P_sum_dot_row,0,row_psum_size));
+			HandleCUDAError(cudaMemset(d_P_sum_L_2_row,0,row_psum_size));
+			d_L_2_Partial_Reduction_CH<<<grid_dim_1D_row,block_dim_1D_row>>>(d_A,d_v_row,hold_dot_row,d_P_sum_L_2_row,i,nx,nx);
 			cudaDeviceSynchronize();
-			final_L_2<<<1,grid_dim_1D_row>>>(hold_L_2_row,grid_dim_1D_row,mu_row);
+			d_Commit_L_2<<<1,grid_dim_1D_row>>>(d_P_sum_L_2_row,mu_row);
 			cudaDeviceSynchronize();
 			Update_v<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,j,mu_row,nx);
 			cudaDeviceSynchronize();
-			d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,hold_dot_row,j,nx);
+			d_Dot_Product<<<grid_dim_1D_row,block_dim_1D_row>>>(d_v_row,hold_dot_row,d_P_sum_dot_row,j,nx);
 			cudaDeviceSynchronize();
-			Compute_Beta<<<1,grid_dim_1D_row>>>(hold_dot_row,beta_row,grid_dim_1D_row);
+			Compute_Beta<<<1,grid_dim_1D_row>>>(d_P_sum_dot_row,beta_row);
 			cudaDeviceSynchronize();
 			Aug_MatrixVectorMult_Col<<<grid_dim_1D_col,block_dim_1D_col>>>(d_A,d_v_row,d_p_col,beta_row,i,nx,ny); //should this be d_p_col or d_p_row?
 			cudaDeviceSynchronize();

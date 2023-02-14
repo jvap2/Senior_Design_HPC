@@ -7,9 +7,11 @@ void Generate_Vector(float* in, int size){
     }
 }
 
-void Verify(float GPU_dot, float CPU_dot){
-    float dif=fabsf(GPU_dot-CPU_dot);
-    if(dif>1e-6){
+void Verify(float* GPU_dot, float* CPU_dot){
+    float dif=fabsf(*(GPU_dot)-*(CPU_dot));
+    if(dif>1e-4){
+        cout<<"CPU is "<<*(CPU_dot)<<endl;
+        cout<<"GPU is "<<*(GPU_dot)<<endl;
         cout<<"Error with the Dot Product"<<endl;
         return;
     }

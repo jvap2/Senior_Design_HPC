@@ -2,8 +2,8 @@
 
 int main(){
     float *v_1, *v_2, *p, *p_2, *res_1, *res_2;
-    int ny=1024;
-    int nx=1023;
+    int ny=7;
+    int nx=6;
     p=new float[ny*nx];
     p_2=new float[ny*nx];
     res_1=new float[nx];
