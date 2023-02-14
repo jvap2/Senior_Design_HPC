@@ -1,6 +1,6 @@
 Performance Estimates- Hardware Emulation
-|Size| GPU times (ms) | Memory Transfer (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) | Write Latency (MB/s) | Read Latency (MB/s) | 
-|----|---------------|--------------|--------------|--------------|--------------|--------------|--------------|
+|Size| GPU times (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) | Write Latency (MB/s) | Read Latency (MB/s) | 
+|----|---------------|--------------|--------------|--------------|--------------|--------------|
 |1024|.017|1.088|7.184|8.272|
 |4096|.07|4.352|28.736|33.088|
 |16384|.235|.15124|
