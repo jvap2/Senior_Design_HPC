@@ -1,0 +1,4 @@
+06:23:11 **** Build of configuration Emulation-SW for project L_2_kernels ****
+make -j12 all 
+Error: No Hardware Functions added for build. Nothing to build.
+To add Hardware Functions for the project, goto Project, open the project editor -> Hardware Functions -> Add Hardware Function...

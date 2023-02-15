@@ -16,3 +16,4 @@ typedef struct{
 float L_2(float* in, int size);
 void Verify(float* GPU_dot, float* CPU_dot);
 void Generate_Vector(float* in, int size);
+void copy_to_type_V(float* in, V* data, int size);

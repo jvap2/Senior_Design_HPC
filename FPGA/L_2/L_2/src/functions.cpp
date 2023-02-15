@@ -1,4 +1,4 @@
-#include ".../src/L_2.hpp"
+#include "../Senior_Design_HPC/FPGA/L_2/L_2/src/L_2.hpp"
 
 void Generate_Vector(float* in, int size){
     for(int i{}; i<size;i++){
@@ -14,4 +14,13 @@ void Verify(float GPU_dot, float CPU_dot){
         cout<<"Error with the Dot Product"<<endl;
         return;
     }
+}
+
+void copy_to_type_V(float* in, V* data, int size){
+	const int indexes=size/4;
+	for(int i{}; i<indexes; i++){
+		for(int j{}; j<4; j++){
+			data[i].array[j]=in[4*i+j];
+		}
+	}
 }

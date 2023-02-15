@@ -2,11 +2,12 @@
 <hwkernel:HwKernelProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hwkernel="http://www.xilinx.com/acceleration/hwkernel" name="L_2_kernels" platform="/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm" platformUID="xilinx:u55c:gen3x16_xdma_3:202210.1" systemProject="L_2_system" cpu="">
   <configuration name="Emulation-SW" id="com.xilinx.ide.accel.config.hwkernel.sw_emu.606788807">
     <configBuildOptions xsi:type="hwkernel:KernelOptions" kernelDebug="true"/>
+    <lastBuildOptions xsi:type="hwkernel:KernelOptions" kernelDebug="true"/>
   </configuration>
-  <configuration name="Emulation-HW" id="com.xilinx.ide.accel.config.hwkernel.hw_emu.346443023">
+  <configuration name="Emulation-HW" id="com.xilinx.ide.accel.config.hwkernel.hw_emu.346443023" dirty="true">
     <configBuildOptions xsi:type="hwkernel:KernelOptions" kernelDebug="true" target="hw_emu"/>
   </configuration>
-  <configuration name="Hardware" id="com.xilinx.ide.accel.config.hwkernel.hw.42083386">
+  <configuration name="Hardware" id="com.xilinx.ide.accel.config.hwkernel.hw.42083386" dirty="true">
     <configBuildOptions xsi:type="hwkernel:KernelOptions" target="hw"/>
   </configuration>
 </hwkernel:HwKernelProject>

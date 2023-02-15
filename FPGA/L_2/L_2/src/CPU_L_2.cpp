@@ -1,4 +1,4 @@
-#include ".../src/L2.hpp"
+#include "../Senior_Design_HPC/FPGA/L_2/L_2/src/L_2.hpp"
 
 
 float L_2(float* in, int size){
