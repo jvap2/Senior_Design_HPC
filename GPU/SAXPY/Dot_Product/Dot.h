@@ -17,3 +17,6 @@ using namespace std::chrono;
 void Generate_Vector(float* in, int size);
 void Verify(float GPU_dot, float CPU_dot);
 float Dot_Product(float* in_1,float* in_2, int size);
+__host__ void Dot_Helper(float* vect_1, float* vect_2, float* ref, float* dot_GPU, int size);
+__global__ void d_Dot_Partial(float* in_1, float* in_2, float* hold, float* g_PartialSums, int size);
+__global__ void d_Commit_Dot(float* g_Partial_Sum, float* dot);
