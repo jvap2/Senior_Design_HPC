@@ -4,6 +4,7 @@
 #include <chrono>
 using namespace std;
 #include <math.h>
+#include <hls_stream.h>
 
 #define RANGE_MAX 0.5
 #define RANGE_MIN -0.5

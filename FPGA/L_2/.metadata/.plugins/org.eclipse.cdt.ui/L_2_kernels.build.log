@@ -1,7 +1,204 @@
-06:23:11 **** Build of configuration Emulation-SW for project L_2_kernels ****
+06:46:28 **** Incremental Build of configuration Emulation-SW for project L_2_kernels ****
 make -j12 all 
-Error: No Hardware Functions added for build. Nothing to build.
-To add Hardware Functions for the project, goto Project, open the project editor -> Hardware Functions -> Add Hardware Function...
+/tools/Xilinx/Vitis/2022.1/bin/v++ --target sw_emu --compile -I"../src" --config L_2-compile.cfg -o"build/L_2.xo" "../src/L_2_Reduce_kernel.cpp"
+/tools/Xilinx/Vitis/2022.1/bin/v++ --target sw_emu --compile -I"../src" --config fp_reduce-compile.cfg -o"build/fp_reduce.xo" "../src/L_2_Reduce_kernel.cpp"
+/tools/Xilinx/Vitis/2022.1/bin/v++ --target sw_emu --compile -I"../src" --config load-compile.cfg -o"build/load.xo" "../src/L_2_Reduce_kernel.cpp"
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
 
-06:23:11 Build Finished (took 796ms)
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/reports/fp_reduce
+	Log files: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/logs/fp_reduce
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/reports/load
+	Log files: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/logs/load
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/reports/L_2
+	Log files: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/logs/L_2
+Running Dispatch Server on port: 37183
+Running Dispatch Server on port: 43641
+Running Dispatch Server on port: 46553
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce.xo.compile_summary, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load.xo.compile_summary, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2.xo.compile_summary, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Wed Feb 15 06:46:41 2023
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 60-585] Compiling for software emulation target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-242] Creating kernel: 'load'
+INFO: [v++ 60-585] Compiling for software emulation target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-242] Creating kernel: 'L_2'
+INFO: [v++ 60-585] Compiling for software emulation target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-242] Creating kernel: 'fp_reduce'
+
+===>The following messages were generated while  performing high-level synthesis for kernel: fp_reduce Log file: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log :
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-300] Failed to build kernel(ip) fp_reduce, see log for details: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/fp_reduce/fp_reduce/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-599] Kernel compilation failed to complete
+ERROR: [v++ 60-592] Failed to finish compilation
+INFO: [v++ 60-1653] Closing dispatch client.
+make: *** [makefile:69: build/fp_reduce.xo] Error 1
+make: *** Waiting for unfinished jobs....
+
+===>The following messages were generated while  performing high-level synthesis for kernel: L_2 Log file: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log :
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-300] Failed to build kernel(ip) L_2, see log for details: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/L_2/L_2/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-599] Kernel compilation failed to complete
+ERROR: [v++ 60-592] Failed to finish compilation
+INFO: [v++ 60-1653] Closing dispatch client.
+make: *** [makefile:64: build/L_2.xo] Error 1
+
+===>The following messages were generated while  performing high-level synthesis for kernel: load Log file: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log :
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-300] Failed to build kernel(ip) load, see log for details: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:4:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:30)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'out' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:32)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1198] expected '(' for function-style cast or type construction (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:5:41)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:18:9)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:27:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:12)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:16)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:28:23)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'i' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:30:15)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1222] expected statement (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:32:1)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3776] use of undeclared identifier 'hls' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:10)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3701] variable has incomplete type 'void' (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:6)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-3789] unexpected type name 'V': expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:22)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-1186] expected expression (/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/src/L_2_Reduce_kernel.cpp:36:24)
+ERROR: [v++ 60-773] In '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2_kernels/Emulation-SW/build/load/load/vitis_hls.log', caught Tcl error: ERROR: [HLS 207-59] too many errors emitted, stopping now
+ERROR: [v++ 60-599] Kernel compilation failed to complete
+ERROR: [v++ 60-592] Failed to finish compilation
+INFO: [v++ 60-1653] Closing dispatch client.
+make: *** [makefile:74: build/load.xo] Error 1
+
+06:46:54 Build Finished (took 26s.43ms)
 

@@ -1,4 +1,4 @@
-#include "../Senior_Design_HPC/FPGA/L_2/L_2/src/L_2.hpp"
+#include "/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/L_2/L_2/src/L_2.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

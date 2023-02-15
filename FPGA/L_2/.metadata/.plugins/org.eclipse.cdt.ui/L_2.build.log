@@ -1,0 +1,7 @@
+07:13:28 **** Incremental Build of configuration Emulation-HW for project L_2 ****
+make -j12 all 
+g++ -std=c++1y -DVITIS_PLATFORM=xilinx_u55c_gen3x16_xdma_3_202210_1 -D__USE_XOPEN2K8 -I/opt/xilinx/xrt/include/ -I/tools/Xilinx/Vitis_HLS/2022.1/include/ -O0 -g -Wall -c -fmessage-length=0 -o "src/L_2_host.o" "../src/L_2_host.cpp"
+g++ -o "L_2" src/CPU_L_2.o src/L_2_host.o src/functions.o src/xcl2.o -lxilinxopencl -lpthread -lrt -lstdc++ -L/opt/xilinx/xrt/lib/ -Wl,-rpath-link,/opt/xilinx/xrt/lib
+
+07:13:30 Build Finished (took 1s.884ms)
+
