@@ -16,3 +16,4 @@ using namespace std::chrono;
 
 void Generate_Vector(float* in, int size);
 void Verify(float GPU_dot, float CPU_dot);
+float Dot_Product(float* in_1,float* in_2, int size);
