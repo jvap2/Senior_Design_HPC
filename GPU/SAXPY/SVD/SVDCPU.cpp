@@ -126,7 +126,6 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     sign(v[k],s);
     //The above two lines are for the householder algo
     beta=v[k]+s*mu;
-    cout<<"beta from CPU row House="<<beta<<endl;
     if(fabsf(beta)>=1e-6){
         for(int i=k+1;i<ny;i++){
             v[i]/=beta;
@@ -136,7 +135,6 @@ void House_Row(float* A, float* p, float* res, float* v, int k, int ny, int nx){
     //Row House
     Dot_Product(v,v,dot,k,ny);
     beta=-2/dot;
-    cout<<"The Dot Product Beta, Row House="<<beta<<endl;
     Aug_Mat_Vect_Mult(A,res,v,k,ny,nx);
     const_vect_mult(res,beta,k,nx);
     Outer_Product(res,v,p,k,ny,nx);

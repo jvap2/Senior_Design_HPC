@@ -1,0 +1,6 @@
+16:48:06 **** Incremental Build of configuration Emulation-HW for project dot_product_kernels ****
+make -j12 all 
+make: Nothing to be done for 'all'.
+
+16:48:06 Build Finished (took 685ms)
+

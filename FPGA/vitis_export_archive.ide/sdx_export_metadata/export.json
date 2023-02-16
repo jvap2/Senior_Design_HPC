@@ -1,0 +1,37 @@
+{
+  "version": "2022.1",
+  "applications": [],
+  "platforms": [],
+  "systems": [
+    {
+      "name": "dot_product_system",
+      "platform": "/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm",
+      "sysConfig": "config0_0",
+      "buildConfig": "Emulation-HW",
+      "applications": [
+        {
+          "name": "dot_product_system_hw_link",
+          "platform": "/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm",
+          "sysConfig": "Linux on x86",
+          "domain": "pl",
+          "system": "dot_product_system"
+        },
+        {
+          "name": "dot_product_kernels",
+          "platform": "/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm",
+          "sysConfig": "Linux on x86",
+          "domain": "",
+          "system": "dot_product_system"
+        },
+        {
+          "name": "dot_product",
+          "platform": "/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm",
+          "sysConfig": "config0_0",
+          "domain": "x86",
+          "system": "dot_product_system"
+        }
+      ]
+    }
+  ],
+  "others": []
+}

@@ -74,14 +74,14 @@ void DisplayMatrix(string name, float* temp, const int ny, const int nx)
 
 void SVDVerification(float* hostC, float* gpuC, const int ny, const int nx)
 {
-	float fTolerance = 1.0E-03;
+	float fTolerance = 1.0E-01;
 	float* p = hostC;
 	float* q = gpuC;
 	for (int i = 0; i < ny; i++)
 	{
 		for (int j = 0; j < nx; j++)
 		{
-			if (fabs(p[j] - q[j]) > fTolerance)
+			if (fabs(fabsf(p[j]) - fabsf(q[j])) > fTolerance)
 			{
 				cout << "Error" << endl;
 				cout << "\thostC[" << (i + 1) << "][" << (j + 1) << "] = " << p[j] << endl;

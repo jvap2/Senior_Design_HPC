@@ -1,0 +1,36 @@
+16:48:02 **** Incremental Build of configuration Emulation-HW for project dot_product ****
+make -j12 all 
+g++ -std=c++1y -DVITIS_PLATFORM=xilinx_u55c_gen3x16_xdma_3_202210_1 -D__USE_XOPEN2K8 -I/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product/libs/common/includes/xcl2 -I/opt/xilinx/xrt/include/ -I/tools/Xilinx/Vitis_HLS/2022.1/include/ -O0 -g -Wall -c -fmessage-length=0 -o "src/host.o" "../src/host.cpp"
+g++ -o "dot_product" libs/common/includes/xcl2/xcl2.o src/host.o -lxilinxopencl -lpthread -lrt -lstdc++ -L/opt/xilinx/xrt/lib/ -Wl,-rpath-link,/opt/xilinx/xrt/lib
+16:48:06 **** Incremental Build of configuration Emulation-HW for project dot_product_kernels ****
+make -j12 all 
+make: Nothing to be done for 'all'.
+16:48:06 **** Incremental Build of configuration Emulation-HW for project dot_product_system_hw_link ****
+make all 
+make: Nothing to be done for 'all'.
+16:48:07 **** Incremental Build of configuration Emulation-HW for project dot_product_system ****
+make all 
+/tools/Xilinx/Vitis/2022.1/bin/v++ --package --config package.cfg ../../dot_product_system_hw_link/Emulation-HW/vadd.xclbin -o vadd.xclbin
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ package can be found at:
+	Reports: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/package.build/reports/package
+	Log files: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/package.build/logs/package
+Running Dispatch Server on port: 41521
+INFO: [v++ 60-1548] Creating build summary session with primary output /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/vadd.xclbin.package_summary, at Thu Feb 16 16:48:20 2023
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Thu Feb 16 16:48:20 2023
+INFO: [v++ 60-1315] Creating rulecheck session with output '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/package.build/reports/package/v++_package_vadd_guidance.html', at Thu Feb 16 16:48:21 2023
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 60-2256] Packaging for hardware emulation
+INFO: [v++ 60-2460] Successfully copied a temporary xclbin to the output xclbin: /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/vadd.xclbin
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product_system/Emulation-HW/vadd.xclbin.package_summary 
+INFO: [v++ 60-791] Total elapsed time: 0h 0m 18s
+INFO: [v++ 60-1653] Closing dispatch client.
+cp -f vadd.xclbin ../../dot_product/Emulation-HW
