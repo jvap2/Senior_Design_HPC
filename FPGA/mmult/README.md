@@ -1,6 +1,6 @@
 ### Matrix Multiplication Performance Estimates- Hardware Emulation
-|Size| CPU times (ms) | Kernel times (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) | Write Latency (MB/s) | Read Latency (MB/s) | Speedup |
-|----|---------------|---------------|--------------|--------------|--------------|--------------|--------------|----------|
+|Size| CPU times (ms) | Naive Kernel time (ms) |Partition Kernel time (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) |Speedup |
+|----|---------------|---------------|---------------|--------------|--------------|--------------|----------|
 |4096|0.02617|0.07|4.352|28.736|33.088|1129.41|1200|0.3739|
 |16384|0.103543|0.235|17.408|114.944|132.352|1129.41|1200|0.4406|
 |65536|0.4669|0.887|69.632|459.776|529.408|1129.41|1200|0.526
