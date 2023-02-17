@@ -2,3 +2,8 @@
 *.vscode/
 *.snap
 *.xmi
+*.analytics
+*.log
+*.sc
+*.xml
+*.prefs

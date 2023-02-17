@@ -385,3 +385,20 @@ timestamp=[2023-02-16 16:48:04], mode=BUILD, duration=0:00:02.347, duration_ms=2
 timestamp=[2023-02-16 16:48:06], mode=BUILD, duration=0:00:00.708, duration_ms=708, data={name=dot_product_kernels, configuration=Emulation-HW, clean_build=false}
 timestamp=[2023-02-16 16:48:07], mode=BUILD, duration=0:00:00.864, duration_ms=864, data={name=dot_product_system_hw_link, configuration=Emulation-HW, clean_build=false}
 timestamp=[2023-02-16 16:48:28], mode=BUILD, duration=0:00:21.101, duration_ms=21101, data={name=dot_product_system, configuration=Emulation-HW, clean_build=false}
+timestamp=[2023-02-16 17:00:56], mode=WORKBENCH_START, duration=0:00:06.034, duration_ms=6034, data={}
+timestamp=[2023-02-16 17:00:57], mode=WORKBENCH_UI_INIT, duration=0:00:00.914, duration_ms=914, data={editors_count=7, platform_editors_count=0, projects_count=5, platform_projects_count=0, active_platform_editor=false, projects=RemoteSystemsTempFiles,dot_product,dot_product_kernels,dot_product_system,dot_product_system_hw_link}
+timestamp=[2023-02-16 17:00:57], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:00.714, duration_ms=714, data={}
+timestamp=[2023-02-16 17:01:52], mode=APP_CREATION, duration=0:00:06.530, duration_ms=6530, data={name=L_2_Norm, project_type=datacenter, os=NA, processor=null, runtime=OpenCL, platform=xilinx_u55c_gen3x16_xdma_3_202210_1, application_type=application}
+timestamp=[2023-02-16 17:07:01], mode=BUILD, duration=0:00:00.013, duration_ms=13, data={name=L_2_Norm, configuration=Emulation-SW, clean_build=true}
+timestamp=[2023-02-16 17:07:06], mode=BUILD, duration=0:00:04.882, duration_ms=4882, data={name=L_2_Norm, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:07:37], mode=BUILD, duration=0:00:29.197, duration_ms=29197, data={name=L_2_Norm_kernels, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:08:00], mode=BUILD, duration=0:00:22.429, duration_ms=22429, data={name=L_2_Norm_system_hw_link, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:08:58], mode=BUILD, duration=0:00:02.058, duration_ms=2058, data={name=L_2_Norm, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:09:00], mode=BUILD, duration=0:00:00.755, duration_ms=755, data={name=L_2_Norm_kernels, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:09:01], mode=BUILD, duration=0:00:00.750, duration_ms=750, data={name=L_2_Norm_system_hw_link, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:09:21], mode=BUILD, duration=0:00:19.854, duration_ms=19854, data={name=L_2_Norm_system, configuration=Emulation-SW, clean_build=false}
+timestamp=[2023-02-16 17:10:00], mode=BUILD, duration=0:00:00.010, duration_ms=10, data={name=L_2_Norm, configuration=Emulation-HW, clean_build=true}
+timestamp=[2023-02-16 17:10:05], mode=BUILD, duration=0:00:04.818, duration_ms=4818, data={name=L_2_Norm, configuration=Emulation-HW, clean_build=false}
+timestamp=[2023-02-16 17:11:06], mode=BUILD, duration=0:00:58.574, duration_ms=58574, data={name=L_2_Norm_kernels, configuration=Emulation-HW, clean_build=false}
+timestamp=[2023-02-16 17:16:39], mode=BUILD, duration=0:05:33.035, duration_ms=333035, data={name=L_2_Norm_system_hw_link, configuration=Emulation-HW, clean_build=false}
+timestamp=[2023-02-16 17:17:00], mode=BUILD, duration=0:00:21.554, duration_ms=21554, data={name=L_2_Norm_system, configuration=Emulation-HW, clean_build=false}

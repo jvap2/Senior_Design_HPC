@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hwlink:HwLinkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hwlink="http://www.xilinx.com/acceleration/hwlink" name="L_2_Norm_system_hw_link" platform="/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm" systemProject="L_2_Norm_system" cpu="pl">
+  <configuration name="Emulation-SW" id="com.xilinx.ide.accel.config.hwlink.sw_emu.2090646662">
+    <configBuildOptions xsi:type="hwlink:LinkOptions">
+      <binaryContainers name="vadd">
+        <kernels name="vadd" projectName="L_2_Norm_kernels">
+          <computeUnits name="vadd_1" slr="">
+            <args name="a" master="true" memory=""/>
+            <args name="b" master="true" memory=""/>
+            <args name="out" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="hwlink:LinkOptions">
+      <binaryContainers name="vadd">
+        <kernels name="vadd" projectName="L_2_Norm_kernels">
+          <computeUnits name="vadd_1" slr="">
+            <args name="a" master="true" memory=""/>
+            <args name="b" master="true" memory=""/>
+            <args name="out" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+  <configuration name="Emulation-HW" id="com.xilinx.ide.accel.config.hwlink.hw_emu.1380952134">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw_emu">
+      <binaryContainers name="vadd">
+        <kernels name="vadd" projectName="L_2_Norm_kernels">
+          <computeUnits name="vadd_1" slr="">
+            <args name="a" master="true" memory=""/>
+            <args name="b" master="true" memory=""/>
+            <args name="out" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="hwlink:LinkOptions" target="hw_emu">
+      <binaryContainers name="vadd">
+        <kernels name="vadd" projectName="L_2_Norm_kernels">
+          <computeUnits name="vadd_1" slr="">
+            <args name="a" master="true" memory=""/>
+            <args name="b" master="true" memory=""/>
+            <args name="out" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+  <configuration name="Hardware" id="com.xilinx.ide.accel.config.hwlink.hw.1577788797">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw">
+      <binaryContainers name="vadd">
+        <kernels name="vadd" projectName="L_2_Norm_kernels">
+          <computeUnits name="vadd_1" slr="">
+            <args name="a" master="true" memory=""/>
+            <args name="b" master="true" memory=""/>
+            <args name="out" master="true" memory=""/>
+          </computeUnits>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+  </configuration>
+</hwlink:HwLinkProject>

@@ -266,3 +266,17 @@
 16:31:53 INFO  : Successfully done query RDI_DATADIR 
 16:37:15 INFO  : Launching executable: Emulation-HW/dot_product  ${project_loc:dot_product_system}/Emulation-HW/vadd.xclbin
 16:49:46 INFO  : Launching executable: Emulation-HW/dot_product  ${project_loc:dot_product_system}/Emulation-HW/vadd.xclbin
+17:00:54 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+17:00:55 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+17:00:56 INFO  : Registering command handlers for Vitis TCF services
+17:00:57 INFO  : Platform repository initialization has completed.
+17:00:58 INFO  : XSCT server has started successfully.
+17:00:58 INFO  : Successfully done setting XSCT server connection channel  
+17:00:58 INFO  : plnx-install-location is set to ''
+17:00:58 INFO  : Successfully done query RDI_DATADIR 
+17:00:58 INFO  : Successfully done setting workspace for the tool. 
+17:09:55 INFO  : Build configuration of 'L_2_Norm_system_hw_link' is updated to 'Emulation-HW'
+17:09:55 INFO  : Build configuration of 'L_2_Norm_kernels' is updated to 'Emulation-HW'
+17:09:55 INFO  : Build configuration of 'L_2_Norm' is updated to 'Emulation-HW'
+17:17:44 INFO  : Launching executable: Emulation-HW/L_2_Norm  ${project_loc:L_2_Norm_system}/Emulation-HW/vadd.xclbin
+17:19:37 INFO  : Launching executable: Emulation-HW/L_2_Norm  ${project_loc:L_2_Norm_system}/Emulation-HW/vadd.xclbin
