@@ -1,3 +1,5 @@
-|SIZE| CPU Execution Time (ms) | GPU Execution Time W/O Mem Transfer(ms) |GPU Execution Time W/O Mem Transfer(ms) | SpeedUp (W/O Mem) | SpeedUp (W/ Mem) | Throughput (GB/s)|
+|SIZE| CPU Execution Time (ms) | GPU Execution Time W/O Mem Transfer(ms) |GPU Execution Time W/ Mem Transfer(ms) | SpeedUp (W/O Mem) | SpeedUp (W/ Mem) | Throughput (GB/s)|
 |----|-------------------------|-----------------------------------------|----------------------------------------|-------------------|------------------|------------------|
-|256|2.7032| 1.6221 | 1.6957| | | 3.61837|
+|256|2.7032| 1.6221 | 1.6957| 1.667 | 1.594 | 3.61837|
+|512|8.231| 2.0685 | 2.28095 | 3.9792 | 3.609 | 4.9762|
+|1024| 32.6175 | 3.0536 | 3.7452 | 10.682 | 8.709 | 6.0126|
