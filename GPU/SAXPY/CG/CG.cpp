@@ -7,8 +7,8 @@ int main(){
     float *r_GPU,*r_old_GPU,*d_GPU,*d_old_GPU,*x_GPU,*x_old_GPU;
     float lambda{}, beta{};
     float lambda_GPU{}, beta_GPU{};
-    int ny=1024;
-    int nx=1024;
+    int ny=4096;
+    int nx=4096;
     if(ny!=nx){
         return -1;
     }
