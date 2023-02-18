@@ -104,3 +104,9 @@ void Const_Vect_Mult(float* vect, float* out, float scalar, int size){
 		out[i]=scalar*vect[i];
 	}
 }
+
+void vector_subtract(float* in_1, float* in_2, float* out, int size){
+	for(int i{}; i<size;i++){
+		out[i]=in_1[i]-in_2[i];
+	}
+}

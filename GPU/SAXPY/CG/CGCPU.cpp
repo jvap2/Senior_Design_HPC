@@ -1,6 +1,6 @@
 #include "CG.h"
 
-void C_G(float* A, float* b, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size){
+void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size){
     float Ad[size]{};
     float lamd_d[size]{};
     float beta_d[size]{};
@@ -9,7 +9,7 @@ void C_G(float* A, float* b, float* r, float* r_old, float* d, float* d_old, flo
     float temp_2{};
     int count=0;
     while(count<size){
-        cpuMatrixVect(A,b,Ad,size,size);
+        cpuMatrixVect(A,d_old,Ad,size,size);
         temp_1=Dot_Product(r_old,r_old,size);
         temp_2=Dot_Product(d_old,Ad,size);
         if(fabsf(temp_1)<1e-5 || fabsf(temp_2)<1e-5){
