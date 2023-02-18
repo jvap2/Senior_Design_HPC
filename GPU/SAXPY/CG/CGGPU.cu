@@ -245,7 +245,6 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
 	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
 		cout << "Unable to find elapsed time between events" << endl;
 	}
-	cout<< "GPU CG elapsed time: "<<ElapsedTime<< " ms"<<endl;
     HandleCUDAError(cudaEventRecord(start_dh,0));
     HandleCUDAError(cudaMemcpy(x,d_x,vect_size,cudaMemcpyDeviceToHost));
     if (!HandleCUDAError(cudaEventRecord(stop_dh, 0))) {
@@ -263,8 +262,11 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     float total_time=Elapsed_dh+Elapsed_hd;
     float bytes_transferred=(mat_size+4*vect_size)*1.0f;
     float throughput=(bytes_transferred*1e-6)/(total_time);
-    cout<< "GPU CG elapsed time: "<<total_time<< " ms"<<endl;
+    cout<< "GPU CG Memory elapsed time: "<<total_time<< " ms"<<endl;
+    cout<< "GPU CG Exec elapsed time: "<<ElapsedTime<< " ms"<<endl;
+    cout<< "GPU CG total elapsed time: "<<ElapsedTime+total_time<< " ms"<<endl;
     cout<<"GPU throughput: "<<throughput<< "GB/s"<<endl;
+
     Verify(x,ref,size);
     HandleCUDAError(cudaFree(d_A));
     HandleCUDAError(cudaFree(d_r));
