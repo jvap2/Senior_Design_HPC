@@ -4,7 +4,9 @@
 
 int main(){
     float *A,*A_T,*A_res, *b, *b_res, *r, *r_old, *d, *d_old, *x, *x_old, *Ax, *b_check;
+    float *r_GPU,*r_old_GPU,*d_GPU,*d_old_GPU,*x_GPU,*x_old_GPU;
     float lambda{}, beta{};
+    float lambda_GPU{}, beta_GPU{};
     int ny=1000;
     int nx=1000;
     
@@ -20,6 +22,12 @@ int main(){
     d_old=new float[ny];
     x=new float[ny];
     x_old=new float[ny];
+    r_GPU=new float[ny];
+    r_old_GPU=new float[ny];
+    d_GPU=new float[ny];
+    d_old_GPU=new float[ny];
+    x_GPU=new float[ny];
+    x_old_GPU=new float[ny];
     b_check=new float[ny];
     InitializeMatrix(A,ny,nx);
     Diag_Dominant_Opt(A,ny);
@@ -31,15 +39,17 @@ int main(){
     cpuMatrixVect(A_res, x_old, Ax, ny, nx);
     vector_subtract(b_res,Ax,r_old,ny);
     for(int i=0; i<ny;i++){
+        x_old_GPU[i]=x_old[i];
         d_old[i]=r_old[i];
+        d_old_GPU[i]=d_old[i];
+        r_old_GPU[i]=r_old[i];
     }
     C_G(A_res,r,r_old,d,d_old,x,x_old,beta,lambda,ny);
-    for(int i{}; i<ny; i++){
-        cout<<x[i]<<endl;
-    }
+    CG_Helper(A_res,x,r_GPU,r_old_GPU,d_GPU,d_old_GPU,x_GPU,x_old_GPU,beta_GPU,lambda_GPU,ny);
+
 
     cpuMatrixVect(A_res,x,b_check,ny,nx);
-    Verify(b_check,b_res,ny);
+    // Verify(b_check,b_res,ny);
     delete[] Ax;
     delete[] A;
     delete[] A_T;
@@ -53,6 +63,12 @@ int main(){
     delete[] x;
     delete[] x_old;
     delete[] b_check;
+    delete[] r_GPU;
+    delete[] r_old_GPU;
+    delete[] d_GPU;
+    delete[] d_old_GPU;
+    delete[] x_GPU;
+    delete[] x_old_GPU;
 
     return 0;
 

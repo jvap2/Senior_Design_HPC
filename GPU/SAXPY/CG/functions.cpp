@@ -114,9 +114,9 @@ void vector_subtract(float* in_1, float* in_2, float* out, int size){
 void Verify(float* iter, float* res, int size){
 	for(int i{}; i<size; i++){
 		float dif=fabsf(*(iter+i)-*(res+i));
-		if(dif>1e-2){
-			cout<<"CPU is "<<*(iter+i)<<endl;
-			cout<<"GPU is "<<*(res+i)<<endl;
+		if(dif>1e-4){
+			cout<<"GPU["<<i<<"]="<<*(iter+i)<<endl;
+			cout<<"CPU["<<i<<"]="<<*(res+i)<<endl;
 			cout<<"Error with the Dot Product"<<endl;
 			return;
 		}

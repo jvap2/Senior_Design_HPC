@@ -49,7 +49,7 @@ __global__ void VectAdd(float* g_A, float* g_B, float* g_C, int size){
     }
 }
 
-__global__ void Const_Vect_Mult(float* vect, float* out, float* scalar, int size){
+__global__ void d_Const_Vect_Mult(float* vect, float* out, float* scalar, int size){
     int idx =threadIdx.x+(blockDim.x*blockIdx.x);
     if(idx<size){
         out[idx]=*scalar*vect[idx];
@@ -85,6 +85,13 @@ __global__ void comp_lamba(float* in, float* in_2, float* out,int size, int flag
 
 }
 
+__global__ void Copy(float* in, float* out, int size){
+    int idx=threadIdx.x+(blockIdx.x*blockDim.x);
+    if (idx<size){
+        out[idx]=in[idx];
+    }
+}
+
 
 __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size){
     float* d_Ad;
@@ -117,6 +124,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     int flag_size=sizeof(int);
     int p_sum_size=sizeof(float)*blocks_per_grid;
     int host_flag=1;
+    int host_flag_2=1;
     
     HandleCUDAError(cudaMalloc((void**) &d_A,mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_r,vect_size));
@@ -134,8 +142,8 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     HandleCUDAError(cudaMalloc((void**) &flag_2,flag_size));
     HandleCUDAError(cudaMalloc((void**) &d_Ad,vect_size));
     HandleCUDAError(cudaMalloc((void**) &lamd_d,vect_size));
-    HandleCUDAError(cudaMalloc((void**) &beta_d,mat_size));
-    HandleCUDAError(cudaMalloc((void**) &lambd_AD,mat_size));
+    HandleCUDAError(cudaMalloc((void**) &beta_d,vect_size));
+    HandleCUDAError(cudaMalloc((void**) &lambd_AD,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_dot_partial_1,p_sum_size));
     HandleCUDAError(cudaMalloc((void**) &d_dot_partial_2,p_sum_size));
     HandleCUDAError(cudaMalloc((void**) &d_hold_1,vect_size));
@@ -147,25 +155,92 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
 
     cudaStream_t dot_1;
     cudaStream_t dot_2;
-
+    cudaStream_t copy_1;
+    cudaStream_t copy_2;
+    cudaStream_t copy_3;
     cudaStreamCreate(&dot_1);
     cudaStreamCreate(&dot_2);
-    while(host_flag){
+    cudaStreamCreate(&copy_1);
+    cudaStreamCreate(&copy_2);
+    cudaStreamCreate(&copy_3);
+    int count=0;
+    int MaxIter=5*size;
+    while(count<MaxIter){
         MatrixVectorMult<<<blocks_per_grid,threads_per_block>>>(d_A,d_d_old,d_Ad,size);
         cudaDeviceSynchronize();
         d_Dot_Partial<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_r_old,d_r_old,d_hold_1,d_dot_partial_1,size);
-        d_Dot_Partial<<<blocks_per_grid,threads_per_block,0,dot_2>>>(d_r_old,d_r_old,d_hold_1,d_dot_partial_1,size);
+        d_Dot_Partial<<<blocks_per_grid,threads_per_block,0,dot_2>>>(d_d_old,d_Ad,d_hold_2,d_dot_partial_2,size);
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
         d_Commit_Dot<<<1,blocks_per_grid,0,dot_1>>>(d_dot_partial_1,temp_1,flag);
         d_Commit_Dot<<<1,blocks_per_grid,0,dot_2>>>(d_dot_partial_2,temp_2,flag_2);
+        HandleCUDAError(cudaMemcpyAsync(&host_flag,flag,flag_size,cudaMemcpyDeviceToHost,dot_1));
+        HandleCUDAError(cudaMemcpyAsync(&host_flag_2,flag_2,flag_size,cudaMemcpyDeviceToHost,dot_2));
+        if(!host_flag || !host_flag_2){
+            break;
+        }
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
         comp_lamba<<<1,1,0,dot_1>>>(temp_1,temp_2,d_lambda,1,1);
-        comp_lamba<<<1,1,0,dot_1>>>(temp_1,temp_2,d_lambda,1,0);
+        comp_lamba<<<1,1,0,dot_2>>>(temp_1,temp_2,d_neg_lambda,1,0);
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
+        //Need to do scalar mult
+        d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_d_old,lamd_d,d_lambda,size);
+        d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block,0,dot_2>>>(d_Ad,lambd_AD,d_neg_lambda,size);
+        cudaStreamSynchronize(dot_1);
+        cudaStreamSynchronize(dot_2);
+        VectAdd<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_x_old,lamd_d,d_x,size);
+        VectAdd<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_r_old,lambd_AD,d_r,size);
+        cudaStreamSynchronize(dot_1);
+        cudaStreamSynchronize(dot_2);
+        d_Dot_Partial<<<blocks_per_grid,threads_per_block>>>(d_r,d_r,d_hold_2,d_dot_partial_2,size);
+        cudaDeviceSynchronize();
+        d_Commit_Dot<<<1,blocks_per_grid>>>(d_dot_partial_2,temp_2,flag_2);
+        HandleCUDAError(cudaMemcpyAsync(&host_flag_2,flag_2,flag_size,cudaMemcpyDeviceToHost,dot_2));
+        cudaDeviceSynchronize();
+        if(!host_flag_2){
+            break;
+        }
+        comp_lamba<<<1,1>>>(temp_1,temp_2,d_beta,1,1);
+        cudaDeviceSynchronize();
+        d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_d_old,beta_d,d_beta,size);
+        cudaDeviceSynchronize();
+        VectAdd<<<blocks_per_grid,threads_per_block>>>(d_r,beta_d,d_d,size);
+        cudaDeviceSynchronize();
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_1>>>(d_d_old,d_d,size);
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_2>>>(d_r_old,d_r,size);
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_3>>>(d_x_old,d_x,size);
+        cudaStreamSynchronize(copy_1);
+        cudaStreamSynchronize(copy_2);
+        cudaStreamSynchronize(copy_3);
+        count++;
     }
+
+    HandleCUDAError(cudaMemcpy(x,d_x,vect_size,cudaMemcpyDeviceToHost));
+    Verify(x,ref,size);
+    HandleCUDAError(cudaFree(d_A));
+    HandleCUDAError(cudaFree(d_r));
+    HandleCUDAError(cudaFree(d_r_old));
+    HandleCUDAError(cudaFree(d_d));
+    HandleCUDAError(cudaFree(d_d_old));
+    HandleCUDAError(cudaFree(d_x));
+    HandleCUDAError(cudaFree(d_x_old));
+    HandleCUDAError(cudaFree(d_beta));
+    HandleCUDAError(cudaFree(d_neg_lambda));
+    HandleCUDAError(cudaFree(d_lambda));
+    HandleCUDAError(cudaFree(temp_1));
+    HandleCUDAError(cudaFree(temp_2));
+    HandleCUDAError(cudaFree(d_hold_1));
+    HandleCUDAError(cudaFree(d_hold_2));
+    HandleCUDAError(cudaFree(d_Ad));
+    HandleCUDAError(cudaFree(d_dot_partial_1));
+    HandleCUDAError(cudaFree(d_dot_partial_2));
+    HandleCUDAError(cudaFree(lambd_AD));
+    HandleCUDAError(cudaFree(lamd_d));
+    HandleCUDAError(cudaFree(beta_d));
+    HandleCUDAError(cudaFree(flag));
+    HandleCUDAError(cudaFree(flag_2));
 
 
 }
