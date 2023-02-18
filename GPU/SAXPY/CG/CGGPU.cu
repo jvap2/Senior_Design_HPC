@@ -76,10 +76,10 @@ __global__ void comp_lamba(float* in, float* in_2, float* out,int size, int flag
     int idx =threadIdx.x+(blockDim.x*blockIdx.x);
     if(idx<size){
         if(flag==1){
-            out[idx]=in[idx]*in_2[idx];
+            out[idx]=in[idx]/in_2[idx];
         }
         else{
-            out[idx]=-in[idx]*in_2[idx];
+            out[idx]=-in[idx]/in_2[idx];
         }
     }
 
@@ -176,11 +176,11 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
         d_Commit_Dot<<<1,blocks_per_grid,0,dot_2>>>(d_dot_partial_2,temp_2,flag_2);
         HandleCUDAError(cudaMemcpyAsync(&host_flag,flag,flag_size,cudaMemcpyDeviceToHost,dot_1));
         HandleCUDAError(cudaMemcpyAsync(&host_flag_2,flag_2,flag_size,cudaMemcpyDeviceToHost,dot_2));
+        cudaStreamSynchronize(dot_1);
+        cudaStreamSynchronize(dot_2);
         if(!host_flag || !host_flag_2){
             break;
         }
-        cudaStreamSynchronize(dot_1);
-        cudaStreamSynchronize(dot_2);
         comp_lamba<<<1,1,0,dot_1>>>(temp_1,temp_2,d_lambda,1,1);
         comp_lamba<<<1,1,0,dot_2>>>(temp_1,temp_2,d_neg_lambda,1,0);
         cudaStreamSynchronize(dot_1);
@@ -202,7 +202,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
         if(!host_flag_2){
             break;
         }
-        comp_lamba<<<1,1>>>(temp_1,temp_2,d_beta,1,1);
+        comp_lamba<<<1,1>>>(temp_2,temp_1,d_beta,1,1);
         cudaDeviceSynchronize();
         d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_d_old,beta_d,d_beta,size);
         cudaDeviceSynchronize();
@@ -216,7 +216,11 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
         cudaStreamSynchronize(copy_3);
         count++;
     }
-
+    cudaStreamDestroy(dot_1);
+    cudaStreamDestroy(dot_2);
+    cudaStreamDestroy(copy_1);
+    cudaStreamDestroy(copy_2);
+    cudaStreamDestroy(copy_3);
     HandleCUDAError(cudaMemcpy(x,d_x,vect_size,cudaMemcpyDeviceToHost));
     Verify(x,ref,size);
     HandleCUDAError(cudaFree(d_A));
