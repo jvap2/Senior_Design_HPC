@@ -36,9 +36,6 @@ __global__ void d_Commit_Dot(float* g_Partial_Sum, float* dot, int* flag){
 	}
     if(tid==0){
         *(dot)=(blockAddress[0]);
-        if(fabsf(*dot)<1e-8){
-            *flag=0;
-        }
     }
 }
 
@@ -52,7 +49,7 @@ __global__ void VectAdd(float* g_A, float* g_B, float* g_C, int size){
 __global__ void d_Const_Vect_Mult(float* vect, float* out, float* scalar, int size){
     int idx =threadIdx.x+(blockDim.x*blockIdx.x);
     if(idx<size){
-        out[idx]=*scalar*vect[idx];
+        out[idx]=(*scalar)*vect[idx];
     }
 }
 
@@ -74,13 +71,11 @@ __global__ void MatrixVectorMult(float* g_Matrix, float* g_V, float* g_P, const 
 
 __global__ void comp_lamba(float* in, float* in_2, float* out,int size, int flag){
     int idx =threadIdx.x+(blockDim.x*blockIdx.x);
-    if(idx<size){
-        if(flag==1){
-            out[idx]=in[idx]/in_2[idx];
-        }
-        else{
-            out[idx]=-in[idx]/in_2[idx];
-        }
+    if(flag==1){
+        *out=*in/(*in_2);
+    }
+    else{
+        *out=-*in/(*in_2);
     }
 
 }
@@ -93,7 +88,8 @@ __global__ void Copy(float* in, float* out, int size){
 }
 
 
-__host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size){
+__host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size, int iter){
+    float ElapsedTime{};
     float* d_Ad;
     float* lamd_d;
     float* beta_d;
@@ -117,7 +113,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     int* flag;
     int* flag_2;
     int threads_per_block=128;
-    int blocks_per_grid=size/threads_per_block+1;
+    int blocks_per_grid=(size/threads_per_block)+1;
     int mat_size=size*size*sizeof(float);
     int vect_size=size*sizeof(float);
     int var_size=sizeof(float);
@@ -125,7 +121,8 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     int p_sum_size=sizeof(float)*blocks_per_grid;
     int host_flag=1;
     int host_flag_2=1;
-    
+    float check{};
+    float check_vec[size];
     HandleCUDAError(cudaMalloc((void**) &d_A,mat_size));
     HandleCUDAError(cudaMalloc((void**) &d_r,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_r_old,vect_size));
@@ -163,9 +160,11 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     cudaStreamCreate(&copy_1);
     cudaStreamCreate(&copy_2);
     cudaStreamCreate(&copy_3);
-    int count=0;
-    int MaxIter=5*size;
-    while(count<MaxIter){
+    cudaEvent_t start, stop;
+	HandleCUDAError(cudaEventCreate(&start));
+	HandleCUDAError(cudaEventCreate(&stop));
+    HandleCUDAError(cudaEventRecord(start,0));
+    for(int i{}; i<iter; i++){
         MatrixVectorMult<<<blocks_per_grid,threads_per_block>>>(d_A,d_d_old,d_Ad,size);
         cudaDeviceSynchronize();
         d_Dot_Partial<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_r_old,d_r_old,d_hold_1,d_dot_partial_1,size);
@@ -174,13 +173,9 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
         cudaStreamSynchronize(dot_2);
         d_Commit_Dot<<<1,blocks_per_grid,0,dot_1>>>(d_dot_partial_1,temp_1,flag);
         d_Commit_Dot<<<1,blocks_per_grid,0,dot_2>>>(d_dot_partial_2,temp_2,flag_2);
-        HandleCUDAError(cudaMemcpyAsync(&host_flag,flag,flag_size,cudaMemcpyDeviceToHost,dot_1));
-        HandleCUDAError(cudaMemcpyAsync(&host_flag_2,flag_2,flag_size,cudaMemcpyDeviceToHost,dot_2));
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
-        if(!host_flag || !host_flag_2){
-            break;
-        }
+
         comp_lamba<<<1,1,0,dot_1>>>(temp_1,temp_2,d_lambda,1,1);
         comp_lamba<<<1,1,0,dot_2>>>(temp_1,temp_2,d_neg_lambda,1,0);
         cudaStreamSynchronize(dot_1);
@@ -191,36 +186,50 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
         VectAdd<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_x_old,lamd_d,d_x,size);
-        VectAdd<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_r_old,lambd_AD,d_r,size);
+        VectAdd<<<blocks_per_grid,threads_per_block,0,dot_2>>>(d_r_old,lambd_AD,d_r,size);
         cudaStreamSynchronize(dot_1);
         cudaStreamSynchronize(dot_2);
+
         d_Dot_Partial<<<blocks_per_grid,threads_per_block>>>(d_r,d_r,d_hold_2,d_dot_partial_2,size);
         cudaDeviceSynchronize();
+
         d_Commit_Dot<<<1,blocks_per_grid>>>(d_dot_partial_2,temp_2,flag_2);
-        HandleCUDAError(cudaMemcpyAsync(&host_flag_2,flag_2,flag_size,cudaMemcpyDeviceToHost,dot_2));
         cudaDeviceSynchronize();
-        if(!host_flag_2){
-            break;
-        }
+
         comp_lamba<<<1,1>>>(temp_2,temp_1,d_beta,1,1);
         cudaDeviceSynchronize();
-        d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block,0,dot_1>>>(d_d_old,beta_d,d_beta,size);
+
+        d_Const_Vect_Mult<<<blocks_per_grid,threads_per_block>>>(d_d_old,beta_d,d_beta,size);
         cudaDeviceSynchronize();
+
         VectAdd<<<blocks_per_grid,threads_per_block>>>(d_r,beta_d,d_d,size);
         cudaDeviceSynchronize();
-        Copy<<<blocks_per_grid,threads_per_block,0,copy_1>>>(d_d_old,d_d,size);
-        Copy<<<blocks_per_grid,threads_per_block,0,copy_2>>>(d_r_old,d_r,size);
-        Copy<<<blocks_per_grid,threads_per_block,0,copy_3>>>(d_x_old,d_x,size);
+
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_1>>>(d_d,d_d_old,size);
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_2>>>(d_r,d_r_old,size);
+        Copy<<<blocks_per_grid,threads_per_block,0,copy_3>>>(d_x,d_x_old,size);
         cudaStreamSynchronize(copy_1);
         cudaStreamSynchronize(copy_2);
         cudaStreamSynchronize(copy_3);
-        count++;
+
     }
     cudaStreamDestroy(dot_1);
     cudaStreamDestroy(dot_2);
     cudaStreamDestroy(copy_1);
     cudaStreamDestroy(copy_2);
     cudaStreamDestroy(copy_3);
+    if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
+		cout << "Unable to perform event records for stop" << endl;
+	}
+	//Synchronize the stop event
+	if (!HandleCUDAError(cudaEventSynchronize(stop))) {
+		cout << "Unable to perform stream synch with stream_4" << endl;
+	}
+	//Save the elapsed time
+	if (!HandleCUDAError(cudaEventElapsedTime(&ElapsedTime, start, stop))) {
+		cout << "Unable to find elapsed time between events" << endl;
+	}
+	cout<< "GPU CG elapsed time: "<<ElapsedTime<< " ms"<<endl;
     HandleCUDAError(cudaMemcpy(x,d_x,vect_size,cudaMemcpyDeviceToHost));
     Verify(x,ref,size);
     HandleCUDAError(cudaFree(d_A));
@@ -245,6 +254,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     HandleCUDAError(cudaFree(beta_d));
     HandleCUDAError(cudaFree(flag));
     HandleCUDAError(cudaFree(flag_2));
+    cudaDeviceReset();
 
 
 }

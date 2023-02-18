@@ -122,3 +122,27 @@ void Verify(float* iter, float* res, int size){
 		}
 	}
 }
+
+void Display(string name, float* temp, const int nx)
+{
+	cout << name << endl;
+	if(nx>10)
+	{ 
+		for (int j = 0; j < 5; j++)
+		{
+			cout << temp[j] << ", ";
+		}
+		cout << ",. . .,";
+		for (int j = (nx-5); j < nx; j++)
+		{
+			cout << temp[j] << ", ";
+		}
+	}
+	else {
+		for (int j = 0; j < nx; j++)
+		{
+			cout << temp[j] << ", ";
+		}
+	}
+	cout << endl;
+}

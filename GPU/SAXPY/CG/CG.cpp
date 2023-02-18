@@ -7,9 +7,9 @@ int main(){
     float *r_GPU,*r_old_GPU,*d_GPU,*d_old_GPU,*x_GPU,*x_old_GPU;
     float lambda{}, beta{};
     float lambda_GPU{}, beta_GPU{};
-    int ny=1000;
-    int nx=1000;
-    
+    int ny=1024;
+    int nx=1024;
+    cout<<"Size="<<ny<<endl;
     Ax=new float[ny];
     A=new float[ny*nx];
     A_T=new float[ny*nx];
@@ -29,6 +29,7 @@ int main(){
     x_GPU=new float[ny];
     x_old_GPU=new float[ny];
     b_check=new float[ny];
+    int iter{};
     InitializeMatrix(A,ny,nx);
     Diag_Dominant_Opt(A,ny);
     TransposeOnCPU(A,A_T,ny,ny);
@@ -38,18 +39,21 @@ int main(){
     Generate_Vector(x_old,ny);
     cpuMatrixVect(A_res, x_old, Ax, ny, nx);
     vector_subtract(b_res,Ax,r_old,ny);
+    vector_subtract(b_res,Ax,r_old_GPU,ny);
+
     for(int i=0; i<ny;i++){
         x_old_GPU[i]=x_old[i];
         d_old[i]=r_old[i];
         d_old_GPU[i]=d_old[i];
-        r_old_GPU[i]=r_old[i];
     }
-    C_G(A_res,r,r_old,d,d_old,x,x_old,beta,lambda,ny);
-    CG_Helper(A_res,x,r_GPU,r_old_GPU,d_GPU,d_old_GPU,x_GPU,x_old_GPU,beta_GPU,lambda_GPU,ny);
+    chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    C_G(A_res,r,r_old,d,d_old,x,x_old,beta,lambda,ny,&iter);
+    end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elasped_seconds = end - start;
+	cout << "CPU Execution time: " << (elasped_seconds.count() * 1000.0f) << " msecs" << endl;
+    CG_Helper(A_res,x,r_GPU,r_old_GPU,d_GPU,d_old_GPU,x_GPU,x_old_GPU,beta_GPU,lambda_GPU,ny,iter);
 
-
-    cpuMatrixVect(A_res,x,b_check,ny,nx);
-    // Verify(b_check,b_res,ny);
     delete[] Ax;
     delete[] A;
     delete[] A_T;
