@@ -280,3 +280,48 @@
 17:09:55 INFO  : Build configuration of 'L_2_Norm' is updated to 'Emulation-HW'
 17:17:44 INFO  : Launching executable: Emulation-HW/L_2_Norm  ${project_loc:L_2_Norm_system}/Emulation-HW/vadd.xclbin
 17:19:37 INFO  : Launching executable: Emulation-HW/L_2_Norm  ${project_loc:L_2_Norm_system}/Emulation-HW/vadd.xclbin
+07:29:41 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+07:29:41 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+07:29:43 INFO  : Platform repository initialization has completed.
+07:29:43 INFO  : Registering command handlers for Vitis TCF services
+07:29:44 INFO  : XSCT server has started successfully.
+07:29:44 INFO  : plnx-install-location is set to ''
+07:29:44 INFO  : Successfully done setting XSCT server connection channel  
+07:29:44 INFO  : Successfully done query RDI_DATADIR 
+07:29:44 INFO  : Successfully done setting workspace for the tool. 
+07:34:45 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+07:34:45 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+07:34:46 INFO  : Platform repository initialization has completed.
+07:34:47 INFO  : Registering command handlers for Vitis TCF services
+07:34:48 INFO  : XSCT server has started successfully.
+07:34:48 INFO  : Successfully done setting XSCT server connection channel  
+07:34:48 INFO  : plnx-install-location is set to ''
+07:34:48 INFO  : Successfully done setting workspace for the tool. 
+07:34:48 INFO  : Successfully done query RDI_DATADIR 
+07:36:56 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+07:36:56 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+07:36:58 INFO  : Platform repository initialization has completed.
+07:36:58 INFO  : Registering command handlers for Vitis TCF services
+07:36:59 INFO  : XSCT server has started successfully.
+07:36:59 INFO  : Successfully done setting XSCT server connection channel  
+07:36:59 INFO  : plnx-install-location is set to ''
+07:36:59 INFO  : Successfully done setting workspace for the tool. 
+07:36:59 INFO  : Successfully done query RDI_DATADIR 
+07:43:13 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+07:43:13 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+07:43:14 INFO  : Registering command handlers for Vitis TCF services
+07:43:15 INFO  : Platform repository initialization has completed.
+07:43:16 INFO  : XSCT server has started successfully.
+07:43:16 INFO  : Successfully done setting XSCT server connection channel  
+07:43:16 INFO  : plnx-install-location is set to ''
+07:43:16 INFO  : Successfully done query RDI_DATADIR 
+07:43:16 INFO  : Successfully done setting workspace for the tool. 
+16:58:10 DEBUG : Logs will be stored at '/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/IDE.log'.
+16:58:11 INFO  : Launching XSCT server: xsct -n  -interactive /home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/temp_xsdb_launch_script.tcl
+16:58:12 INFO  : Registering command handlers for Vitis TCF services
+16:58:13 INFO  : Platform repository initialization has completed.
+16:58:14 INFO  : XSCT server has started successfully.
+16:58:14 INFO  : plnx-install-location is set to ''
+16:58:14 INFO  : Successfully done setting XSCT server connection channel  
+16:58:14 INFO  : Successfully done setting workspace for the tool. 
+16:58:14 INFO  : Successfully done query RDI_DATADIR 
