@@ -7,8 +7,11 @@ int main(){
     float *r_GPU,*r_old_GPU,*d_GPU,*d_old_GPU,*x_GPU,*x_old_GPU;
     float lambda{}, beta{};
     float lambda_GPU{}, beta_GPU{};
-    int ny=1024;
-    int nx=1024;
+    int ny=2048;
+    int nx=2048;
+    if(ny!=nx){
+        return -1;
+    }
     cout<<"Size="<<ny<<endl;
     Ax=new float[ny];
     A=new float[ny*nx];

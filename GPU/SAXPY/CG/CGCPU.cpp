@@ -10,11 +10,12 @@ void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, flo
     *iter=1;
     int MaxIter=10*size;
     float fSum;
+    float norm{};
     while(*(iter)<MaxIter){
         cpuMatrixVect(A,d_old,Ad,size,size);
         temp_1=Dot_Product(r_old,r_old,size);
         temp_2=Dot_Product(d_old,Ad,size);
-        if(fabsf(temp_1)<1e-8 || fabsf(temp_2)<1e-8){
+        if(fabsf(temp_2)<1e-8){
             return;
         }
         lamdba=temp_1/temp_2;
@@ -23,10 +24,11 @@ void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, flo
         Const_Vect_Mult(Ad,lambd_AD,neg_lamb,size);
         cpuVectorAddition(x_old,lamd_d,x,size);
         cpuVectorAddition(r_old,lambd_AD,r,size);
-        temp_2=Dot_Product(r,r,size);
-        if(fabsf(temp_2)<1e-5){
+        norm=L_2(r,size);
+        if(norm<1e-6){
             return;
         }
+        temp_2=Dot_Product(r,r,size);
         beta=temp_2/temp_1;
         Const_Vect_Mult(d_old,beta_d,beta,size);
         cpuVectorAddition(r,beta_d,d,size);
