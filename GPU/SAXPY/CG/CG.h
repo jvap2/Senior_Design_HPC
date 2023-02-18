@@ -16,3 +16,5 @@ void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int n
 void cpuMatrixMult(float* A, float* A_T, float* C, const int ny, const int nx);
 void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx);
 float Dot_Product(float* in_1,float* in_2, int size);
+void Const_Vect_Mult(float* vect, float* out, float scalar, int size);
+void cpuVectorAddition(float* A, float* B, float* C, int size);

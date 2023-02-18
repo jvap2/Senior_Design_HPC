@@ -98,3 +98,9 @@ void cpuVectorAddition(float* A, float* B, float* C, int size){
         C[i]=A[i]+B[i];
     }
 }
+
+void Const_Vect_Mult(float* vect, float* out, float scalar, int size){
+	for(int i=0; i<size; i++){
+		out[i]=scalar*vect[i];
+	}
+}
