@@ -7,6 +7,6 @@
 |4096| 511.06 | 15.208 | 23.6386 | 33.605 | 21.62 | 7.9674 |
 |----|--------|--------|---------|--------|-------|--------|
 <br />
-![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_1.png)
-![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_2.png)
-![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_3.png)
+![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_1.png?raw=true)
+![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_2.png?raw=true)
+![My Image](Senior_Design_HPC/GPU/SAXPY/CG/fig_3.png?raw=true)
