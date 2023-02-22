@@ -6,3 +6,9 @@
 |512|512|640.299|
 |1024|1024|6204.88|
 |2048|2048|151171.0|
+
+
+### Matrix Multiplication Hardware Runs
+|Rows|Columns| CPU times (ms) | Naive Kernel time (ms) |Partition Kernel time (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) | Naive Speedup| Partitition Speedup|
+|----|----|---------------|---------------|---------------|--------------|--------------|--------------|----------|----------|
+|128|128|xyz|3.746|0.402|
