@@ -7,7 +7,7 @@
 |262144|1.7402|3.490|278.528|1839.104|2117.632|1129.41|1200|0.4986|
 |1048576|5.566|13.92|1114.112|7356.416|8470.528|1129.41|1200|0.3999|
 
-## Performance Estimates- Hardware Emulation
+## Performance- Hardware 
 |Size| CPU times (ms) | Kernel times (ms) | Memory Transfer Time, Write (ms) | Memory Transfer Time, Read (ms) | Total Memory Transfer Time (ms) | Write Latency (MB/s) | Read Latency (MB/s) | Speedup |
 |----|---------------|---------------|--------------|--------------|--------------|--------------|--------------|----------|
 |4096|0.02617|0.07|4.352|28.736|33.088|1129.41|1200|0.3739|
