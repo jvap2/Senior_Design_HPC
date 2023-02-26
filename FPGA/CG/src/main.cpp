@@ -1,25 +1,9 @@
-/**
-* Copyright (C) 2019-2021 Xilinx, Inc
-*
-* Licensed under the Apache License, Version 2.0 (the "License"). You may
-* not use this file except in compliance with the License. A copy of the
-* License is located at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and limitations
-* under the License.
-*/
-
 #include "xcl2.hpp"
 #include <algorithm>
 #include <vector>
 #include <iostream>
 #include <cmath>
-#include "CG.hpp"
+#include "CG.h"
 #define DATA_SIZE 64
 #define ny 64
 #define nx 64
@@ -31,8 +15,8 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     std::string binaryFile = argv[1];
-    size_t vector_size_bytes = sizeof(int) * DATA_SIZE;
-    size_t Mat_Size_bytes=sizeof(int)*DATA_SIZE*DATA_SIZE;
+    size_t vector_size_bytes = sizeof(float) * DATA_SIZE;
+    size_t Mat_Size_bytes=sizeof(float)*DATA_SIZE*DATA_SIZE;
     cl_int err;
     cl::Context context;
     cl::Kernel krnl_vector_add;
@@ -56,36 +40,37 @@ int main(int argc, char** argv) {
 //    int* r_old{};
 //    int* d{};
 //    int* d_old{};
-    int lambda[1];
-    int beta[1];
-    int bet{};
-    int l{};
+    float lambda[1];
+    float beta[1];
+    float bet{};
+    float l{};
 //    int* b{};
 //    int* b_res{};
 //    int* x{};
 //    int* x_old{};
     int flag[1];
-    int iter[1]{};
+    int iter[1];
     // Create the test data
-    int r[DATA_SIZE]{};
-    int r_old[DATA_SIZE]{};
-    int d[DATA_SIZE]{};
-    int d_old[DATA_SIZE]{};
-    int x[DATA_SIZE]{};
-    int x_old[DATA_SIZE]{};
-    int r_FPGA[DATA_SIZE]{};
-    int r_old_FPGA[DATA_SIZE]{};
-    int d_FPGA[DATA_SIZE]{};
-    int d_old_FPGA[DATA_SIZE]{};
-    int x_FPGA[DATA_SIZE]{};
-    int x_old_FPGA[DATA_SIZE]{};
-    int A[DATA_SIZE*DATA_SIZE]{};
-    int A_T[DATA_SIZE*DATA_SIZE]{};
-    int A_fin[DATA_SIZE*DATA_SIZE]{};
-    int Ax[DATA_SIZE]{};
-    int b[DATA_SIZE]{};
-    int b_res[DATA_SIZE]{};
+    float r[DATA_SIZE]{};
+    float r_old[DATA_SIZE]{};
+    float d[DATA_SIZE]{};
+    float d_old[DATA_SIZE]{};
+    float x[DATA_SIZE]{};
+    float x_old[DATA_SIZE]{};
+    float r_FPGA[DATA_SIZE]{};
+    float r_old_FPGA[DATA_SIZE]{};
+    float d_FPGA[DATA_SIZE]{};
+    float d_old_FPGA[DATA_SIZE]{};
+    float x_FPGA[DATA_SIZE]{};
+    float x_old_FPGA[DATA_SIZE]{};
+    float A[DATA_SIZE*DATA_SIZE]{};
+    float A_T[DATA_SIZE*DATA_SIZE]{};
+    float A_fin[DATA_SIZE*DATA_SIZE]{};
+    float Ax[DATA_SIZE]{};
+    float b[DATA_SIZE]{};
+    float b_res[DATA_SIZE]{};
     *flag=1;
+    *iter=1;
 //    for (int i = 0; i < DATA_SIZE; i++) {
 //    	source_in1[i]=(int)(rand())/(int)(RAND_MAX);
 //    	source_in2[i]=(int)(rand())/(int)(RAND_MAX);
@@ -101,10 +86,13 @@ int main(int argc, char** argv) {
     Generate_Vector(x_old,ny);
     cpuMatrixVect(A_fin, x_old, Ax, ny, nx);
     vector_subtract(b_res,Ax,r_old,ny);
-    vector_subtract(b_res,Ax,r_old_FPGA,ny);
 
     for(int i=0; i<ny;i++){
+    	r_FPGA[i]=0.0f;
+    	d_FPGA[i]=0.0f;
+    	x_FPGA[i]=0.0f;
         x_old_FPGA[i]=x_old[i];
+        r_old_FPGA[i]=r_old[i];
         d_old[i]=r_old[i];
         d_old_FPGA[i]=d_old[i];
     }
@@ -114,7 +102,7 @@ int main(int argc, char** argv) {
     end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elasped_seconds = end - start;
 	cout << "CPU Execution time: " << (elasped_seconds.count() * 1000.0f) << " msecs" << endl;
-
+	cout<<"Iterations: "<<*iter<<endl;
     // OPENCL HOST CODE AREA START
     // get_xil_devices() is a utility API which will find the xilinx
     // platforms and will return list of devices connected to Xilinx platform
@@ -164,11 +152,11 @@ int main(int argc, char** argv) {
                                          (void*)x_FPGA, &err));
     OCL_CHECK(err, cl::Buffer buffer_in7(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE , vector_size_bytes,
                                          (void*)x_old_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer BET(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(int)),
+    OCL_CHECK(err, cl::Buffer BET(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(float)),
                                             (void*)(beta), &err));
-    OCL_CHECK(err, cl::Buffer lam(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(int)),
+    OCL_CHECK(err, cl::Buffer lam(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(float)),
                                             (void*)(lambda), &err));
-    OCL_CHECK(err, cl::Buffer it(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(int)),
+    OCL_CHECK(err, cl::Buffer it(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(float)),
                                             (void*)(iter), &err));
 
 //    int size = DATA_SIZE;
@@ -205,7 +193,7 @@ int main(int argc, char** argv) {
             std::cout << "i = " << i << " CPU result = " << x[i]
                       << " Device result = " << x_FPGA[i] << std::endl;
             match = false;
-            break;
+//            break;
         }
     }
 

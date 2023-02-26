@@ -6,19 +6,29 @@ using namespace std;
 using namespace std::chrono;
 #include <math.h>
 #include <cmath>
+#define N 64
+#define MAT_SIZE N*N
 
 
-void InitializeMatrix(int *matrix, int ny, int nx);
-void Generate_Vector(int* in, int size);
-void Diag_Dominant_Opt(int* Mat, int N);
-void cpuMatrixVect(int* A_T, int* b, int* b_new, const int ny, const int nx);
-void cpuMatrixMult(int* A, int* A_T, int* C, const int ny, const int nx);
-void TransposeOnCPU(int* matrix, int* matrixTranspose, int ny, int nx);
-int Dot_Product(int* in_1,int* in_2, int size);
-void Const_Vect_Mult(int* vect, int* out, int scalar, int size);
-void cpuVectorAddition(int* A, int* B, int* C, int size);
-void vector_subtract(int* in_1, int* in_2, int* out, int size);
-void C_G(int* A, int* r, int* r_old, int* d, int* d_old, int* x, int* x_old, int beta, int lamdba, int size, int* iter);
-void Verify(int* iter, int* res, int size);
-void Display(string name, int* temp, const int nx);
-int L_2(int* in, int size);
+void InitializeMatrix(float *matrix, int ny, int nx);
+void Generate_Vector(float* in, int size);
+void Diag_Dominant_Opt(float* Mat, int size);
+void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int nx);
+void cpuMatrixMult(float* A, float* A_T, float* C, const int ny, const int nx);
+void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx);
+float Dot_Product(float* in_1,float* in_2, int size);
+void Const_Vect_Mult(float* vect, float* out, float scalar, int size);
+void cpuVectorAddition(float* A, float* B, float* C, int size);
+void vector_subtract(float* in_1, float* in_2, float* out, int size);
+void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size, int* iter);
+void Verify(float* iter, float* res, int size);
+void Display(string name, float* temp, const int nx);
+float L_2(float* in, int size);
+
+void final(float A[MAT_SIZE],float r[N],float r_old[N],float d[N],float d_old[N],float x[N],float x_old[N],float beta[1],float lambda[1],int iter[1]);
+void compt(float scal_1, float scal_2, float out[1],int flag);
+void const_Vect_mult(float scalar[1], float vect[N], float out[N]);
+void Copy(float new_v[N], float old_v[N]);
+void MatVec_Mult(float A[MAT_SIZE], float b[N], float b_new[N]);
+void vadd_p(float a[N], float b[N], float out[N]);
+void dot_p(float a[N], float b[N], float out[1]);

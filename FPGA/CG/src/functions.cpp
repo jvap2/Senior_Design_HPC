@@ -1,7 +1,7 @@
-#include "CG.hpp"
+#include "CG.h"
 
 
-void TransposeOnCPU(int* matrix, int* matrixTranspose, int ny, int nx)
+void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx)
 {
 	for (int y = 0; y < ny; y++)
 	{
@@ -12,9 +12,9 @@ void TransposeOnCPU(int* matrix, int* matrixTranspose, int ny, int nx)
 		}
 	}
 }
-void cpuMatrixMult(int* A, int* A_T, int* C, const int ny, const int nx)
+void cpuMatrixMult(float* A, float* A_T, float* C, const int ny, const int nx)
 {
-	int fSum;
+	float fSum;
 	for (int i = 0; i < ny; i++)
 	{
 		for (int j = 0; j < nx; j++)
@@ -28,9 +28,9 @@ void cpuMatrixMult(int* A, int* A_T, int* C, const int ny, const int nx)
 		}
 	}
 }
-void cpuMatrixVect(int* A_T, int* b, int* b_new, const int ny, const int nx)
+void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int nx)
 {
-	int fSum;
+	float fSum;
 	for (int i = 0; i < ny; i++)
 	{
         fSum = 0.0f;
@@ -42,19 +42,19 @@ void cpuMatrixVect(int* A_T, int* b, int* b_new, const int ny, const int nx)
 	}
 }
 
-void Diag_Dominant_Opt(int* Mat, int N) {
-	int max_row{};
-	int max_col{};
-	for (int i{}; i < N;i++) {
-		for (int j{ 1 }; j < N;j++) {
-		    max_row+=fabsf(Mat[i*N+j]);
-		    max_col+=fabsf(Mat[j*N+i]);
+void Diag_Dominant_Opt(float* Mat, int size) {
+	float max_row{};
+	float max_col{};
+	for (int i{}; i < size;i++) {
+		for (int j{ 1 }; j < size;j++) {
+		    max_row+=fabsf(Mat[i*size+j]);
+		    max_col+=fabsf(Mat[j*size+i]);
 		}
 		if(max_col>=max_row){
-		    Mat[i*N+i]=max_col;
+		    Mat[i*size+i]=max_col;
 		}
 		else{
-		    Mat[i * N + i] = max_row;
+		    Mat[i * size + i] = max_row;
 		}
 		max_row=0;
 		max_col=0;
@@ -62,58 +62,58 @@ void Diag_Dominant_Opt(int* Mat, int N) {
 }
 
 
-void Generate_Vector(int* in, int size){
+void Generate_Vector(float* in, int size){
     for(int i{}; i<size;i++){
-        in[i]=(int)(rand())/(int)(RAND_MAX);
+        in[i]=(float)(rand())/(float)(RAND_MAX);
     }
 }
 
 
-void InitializeMatrix(int *matrix, int ny, int nx)
+void InitializeMatrix(float *matrix, int ny, int nx)
 {
-	int *p = matrix;
+	float *p = matrix;
 
 	for (int i = 0; i < ny; i++)
 	{
 		for (int j = 0; j < nx; j++)
 		{
-			p[j] = (int)(rand())/(int)(RAND_MAX);
+			p[j] = (float)(rand())/(float)(RAND_MAX);
 		}
 		p += nx;
 	}
 }
 
-int Dot_Product(int* in_1,int* in_2, int size){
-    int res{};
+float Dot_Product(float* in_1,float* in_2, int size){
+    float res{};
     for(int i{}; i<size; i++){
         res+=in_1[i]*in_2[i];
     }
     return res;
 }
 
-void cpuVectorAddition(int* A, int* B, int* C, int size){
+void cpuVectorAddition(float* A, float* B, float* C, int size){
     for(int i=0; i<size; i++){
         C[i]=A[i]+B[i];
     }
 }
 
-void Const_Vect_Mult(int* vect, int* out, int scalar, int size){
+void Const_Vect_Mult(float* vect, float* out, float scalar, int size){
 	for(int i=0; i<size; i++){
 		out[i]=scalar*vect[i];
 	}
 }
 
-void vector_subtract(int* in_1, int* in_2, int* out, int size){
+void vector_subtract(float* in_1, float* in_2, float* out, int size){
 	for(int i{}; i<size;i++){
 		out[i]=in_1[i]-in_2[i];
 	}
 }
 
-void Verify(int* iter, int* res, int size){
+void Verify(float* iter, float* res, int size){
 	for(int i{}; i<size; i++){
-		int dif=fabsf(*(iter+i)-*(res+i));
+		float dif=fabsf(*(iter+i)-*(res+i));
 		if(dif>1e-4){
-			std::cout<<"GPU["<<i<<"]="<<*(iter+i)<<std::endl;
+			std::cout<<"FPGA["<<i<<"]="<<*(iter+i)<<std::endl;
 			std::cout<<"CPU["<<i<<"]="<<*(res+i)<<std::endl;
 			std::cout<<"Error with the Dot Product"<<std::endl;
 			return;
@@ -122,8 +122,8 @@ void Verify(int* iter, int* res, int size){
 }
 
 
-int L_2(int* in, int size){
-    int val{};
+float L_2(float* in, int size){
+    float val{};
     for(int i{}; i<size;i++){
         val+=powf(in[i],2.0f);
     }
@@ -132,17 +132,16 @@ int L_2(int* in, int size){
 }
 
 
-void C_G(int* A, int* r, int* r_old, int* d, int* d_old, int* x, int* x_old, int beta, int lamdba, int size, int iter[1]){
-    int Ad[size]={};
-    int lamd_d[size]={};
-    int beta_d[size]={};
-    int lambd_AD[size]={};
-    int temp_1{};
-    int temp_2{};
+void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size, int* iter){
+    float Ad[size]={};
+    float lamd_d[size]={};
+    float beta_d[size]={};
+    float lambd_AD[size]={};
+    float temp_1{};
+    float temp_2{};
     int MaxIter=10*size;
-    int norm{};
-    int count=0;
-    while(count<MaxIter){
+    float norm{};
+    while(*(iter)<MaxIter){
         cpuMatrixVect(A,d_old,Ad,size,size);
         temp_1=Dot_Product(r_old,r_old,size);
         temp_2=Dot_Product(d_old,Ad,size);
@@ -150,7 +149,7 @@ void C_G(int* A, int* r, int* r_old, int* d, int* d_old, int* x, int* x_old, int
             return;
         }
         lamdba=temp_1/temp_2;
-        int neg_lamb=-lamdba;
+        float neg_lamb=-lamdba;
         Const_Vect_Mult(d_old,lamd_d,lamdba,size);
         Const_Vect_Mult(Ad,lambd_AD,neg_lamb,size);
         cpuVectorAddition(x_old,lamd_d,x,size);
@@ -169,7 +168,6 @@ void C_G(int* A, int* r, int* r_old, int* d, int* d_old, int* x, int* x_old, int
             x_old[i]=x[i];
 
         }
-        count+=1;
+        *(iter)+=1;
     }
-    iter[0]=count;
 }
