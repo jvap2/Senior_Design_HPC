@@ -17,6 +17,7 @@
 |1048576|5.566|13.978|2490.368|24288.29696|267786.665|951.084|0.|
 
 
-![fig_2](https://user-images.githubusercontent.com/84815326/221586866-fe43bc69-263b-4449-8021-2491fc9c61d5.png)
-![fig_3](https://user-images.githubusercontent.com/84815326/221586869-706b7aeb-fd8b-4741-997c-cd7e363a7c11.png)
-![fig_1](https://user-images.githubusercontent.com/84815326/221586874-63627ed5-bef4-4a21-bf17-d5303ff9d7e5.png)
+
+![fig_1](https://user-images.githubusercontent.com/84815326/221587686-62d72c63-a2e8-4e9a-9a9f-d903bb5c46a7.png)
+![fig_2](https://user-images.githubusercontent.com/84815326/221587688-a310c73d-41f1-4372-a17b-0c9722534e50.png)
+![fig_3](https://user-images.githubusercontent.com/84815326/221587691-0bef305e-d9c9-4d7a-b17b-f21bd4208e43.png)
