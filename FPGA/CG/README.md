@@ -1,3 +1,3 @@
-| Size | CPU exec time (ms) | FPGA Kernel (ms) | Memory Transfer (ms) | Speedup W/O Mem | Speedup W/ Mem | Throughput |
-|------|--------------------|------------------|----------------------|-----------------|----------------|------------|
-| 64 | | .281| |
+| Size | CPU exec time (ms) | FPGA Kernel (ms) | Memory Transfer (ms) | Speedup W/O Mem | Speedup W/ Mem | Throughput (MB/s) |
+|------|--------------------|------------------|----------------------|-----------------|----------------|-------------------|
+| 64 | .0415 | .281| .0002163 | .1477 | .1476 | 82.903 |
