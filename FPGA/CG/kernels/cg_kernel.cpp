@@ -6,9 +6,9 @@
 #include <cmath>
 
 
-#define N 64
-#define nx 64
-#define ny 64
+#define N 256
+#define nx 256
+#define ny 256
 #define MAT_SIZE N*N
 void dot_p(float a[N], float b[N], float out[1])
 {
@@ -55,19 +55,6 @@ void vadd_p(float a[N], float b[N], float out[N]){
 }
 
 void MatVec_Mult(float A[MAT_SIZE], float b[N], float b_new[N]){
-//	float d_A[MAT_SIZE];
-//	float d_b[N];
-//#pragma HLS array_partition variable=d_A dim=1 complete
-//#pragma HLS array_partition variable=d_b dim=1 complete
-//	for(int i{}; i<MAT_SIZE; i++){
-//#pragma HLS pipeline
-//		d_A[i]=A[i];
-//	}
-//	for(int i{}; i<N;i++){
-//#pragma HLS pipeline
-//		d_b[i]=b[i];
-//	}
-
 #pragma HLS array partition variable=A complete
 #pragma HLS array partition variable=b In complete
 	int fSum;
@@ -135,22 +122,23 @@ void final(float A[MAT_SIZE],
 	float d_Ad_dot{};
 	float mult_d_lam[N]{};
 	float mult_d_bet[N]{};
+	float Lamb_Ad[N]{};
 	float neg_lamb[1]{};
 	int count = *iter;
-	for(int i{}; i<count;i++){
+	for(int i{}; i<=(count);i++){
 		MatVec_Mult(A, d_old, Ad);
 		dot_p(r_old,r_old, &r_old_dot);
 		dot_p(d_old,Ad,&d_Ad_dot);
 		compt(r_old_dot,d_Ad_dot,lambda,1);
 		compt(r_old_dot,d_Ad_dot,neg_lamb,0);
 		const_Vect_mult(lambda, d_old,mult_d_lam);
-		const_Vect_mult(neg_lamb, Ad,Ad);
+		const_Vect_mult(neg_lamb, Ad,Lamb_Ad);
 		vadd_p(mult_d_lam,x_old,x);
-		vadd_p(Ad,r_old,r);
+		vadd_p(Lamb_Ad,r_old,r);
 		dot_p(r,r, &r_dot);
 		compt(r_dot,r_old_dot,beta,1);
 		const_Vect_mult(beta, d_old,mult_d_bet);
-		vadd_p(mult_d_bet,r,x);
+		vadd_p(mult_d_bet,r,d);
 		Copy(r_old,r);
 		Copy(d_old,d);
 		Copy(x_old,x);

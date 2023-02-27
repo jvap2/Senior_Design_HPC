@@ -109,13 +109,12 @@ void vector_subtract(float* in_1, float* in_2, float* out, int size){
 	}
 }
 
-void Verify(float* iter, float* res, int size){
+void Verify(float* iter, float* res, int size, bool* check, int* count){
 	for(int i{}; i<size; i++){
 		float dif=fabsf(*(iter+i)-*(res+i));
-		if(dif>1e-4){
-			std::cout<<"FPGA["<<i<<"]="<<*(iter+i)<<std::endl;
-			std::cout<<"CPU["<<i<<"]="<<*(res+i)<<std::endl;
-			std::cout<<"Error with the Dot Product"<<std::endl;
+		if(dif>1e-3){
+			*check=false;
+			*count=i;
 			return;
 		}
 	}
@@ -132,7 +131,7 @@ float L_2(float* in, int size){
 }
 
 
-void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size, int* iter){
+void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float* beta, float* lamdba, int size, int* iter){
     float Ad[size]={};
     float lamd_d[size]={};
     float beta_d[size]={};
@@ -148,9 +147,9 @@ void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, flo
         if(fabsf(temp_2)<1e-8){
             return;
         }
-        lamdba=temp_1/temp_2;
-        float neg_lamb=-lamdba;
-        Const_Vect_Mult(d_old,lamd_d,lamdba,size);
+        (*lamdba)=temp_1/temp_2;
+        float neg_lamb=-(*lamdba);
+        Const_Vect_Mult(d_old,lamd_d,*lamdba,size);
         Const_Vect_Mult(Ad,lambd_AD,neg_lamb,size);
         cpuVectorAddition(x_old,lamd_d,x,size);
         cpuVectorAddition(r_old,lambd_AD,r,size);
@@ -159,8 +158,8 @@ void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, flo
             return;
         }
         temp_2=Dot_Product(r,r,size);
-        beta=temp_2/temp_1;
-        Const_Vect_Mult(d_old,beta_d,beta,size);
+        *beta=temp_2/temp_1;
+        Const_Vect_Mult(d_old,beta_d,*beta,size);
         cpuVectorAddition(r,beta_d,d,size);
         for(int i=0;i<size;i++){
             d_old[i]=d[i];

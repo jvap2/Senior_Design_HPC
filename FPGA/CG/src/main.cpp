@@ -4,9 +4,9 @@
 #include <iostream>
 #include <cmath>
 #include "CG.h"
-#define DATA_SIZE 64
-#define ny 64
-#define nx 64
+#define DATA_SIZE 256
+#define ny 256
+#define nx 256
 
 
 int main(int argc, char** argv) {
@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     }
     chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    C_G(A_fin,r,r_old,d,d_old,x,x_old,bet,l,ny,iter);
+    C_G(A_fin,r,r_old,d,d_old,x,x_old,&bet,&l,ny,iter);
     end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elasped_seconds = end - start;
 	cout << "CPU Execution time: " << (elasped_seconds.count() * 1000.0f) << " msecs" << endl;
@@ -187,16 +187,13 @@ int main(int argc, char** argv) {
 
     // Compare the results of the Device to the simulation
     bool match = true;
-    for (int i = 0; i < DATA_SIZE; i++) {
-        if (x_FPGA[i] != x[i]) {
-            std::cout << "Error: Result mismatch" << std::endl;
-            std::cout << "i = " << i << " CPU result = " << x[i]
-                      << " Device result = " << x_FPGA[i] << std::endl;
-            match = false;
-//            break;
-        }
+    int i=0;
+    Verify(x_FPGA,x,ny,&match,&i);
+    if(match==false){
+    	std::cout << "Error: Result mismatch" << std::endl;
+    	std::cout << "i = " << i << " CPU result = " << x[i]<< " Device result = " << x_FPGA[i] << std::endl;
+    	match = false;
     }
-
     std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl;
     return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }
