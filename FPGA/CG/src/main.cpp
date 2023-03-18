@@ -4,11 +4,11 @@
 #include <iostream>
 #include <cmath>
 #include "CG.h"
-#define DATA_SIZE 256
-#define ny 256
-#define nx 256
-
-
+#define DATA_SIZE 1024
+#define ny 1024
+#define nx 1024
+#define MAX_HBM_BANKCOUNT 32
+#define BANK_NAME(n) n | XCL_MEM_TOPOLOGY
 int main(int argc, char** argv) {
     if (argc != 2) {
         std::cout << "Usage: " << argv[0] << " <XCLBIN File>" << std::endl;
@@ -40,6 +40,15 @@ int main(int argc, char** argv) {
 //    int* r_old{};
 //    int* d{};
 //    int* d_old{};
+    const int bank[MAX_HBM_BANKCOUNT] = {
+        BANK_NAME(0),  BANK_NAME(1),  BANK_NAME(2),  BANK_NAME(3),  BANK_NAME(4),
+        BANK_NAME(5),  BANK_NAME(6),  BANK_NAME(7),  BANK_NAME(8),  BANK_NAME(9),
+        BANK_NAME(10), BANK_NAME(11), BANK_NAME(12), BANK_NAME(13), BANK_NAME(14),
+        BANK_NAME(15), BANK_NAME(16), BANK_NAME(17), BANK_NAME(18), BANK_NAME(19),
+        BANK_NAME(20), BANK_NAME(21), BANK_NAME(22), BANK_NAME(23), BANK_NAME(24),
+        BANK_NAME(25), BANK_NAME(26), BANK_NAME(27), BANK_NAME(28), BANK_NAME(29),
+        BANK_NAME(30), BANK_NAME(31)};
+
     float lambda[1];
     float beta[1];
     float bet{};
@@ -132,26 +141,48 @@ int main(int argc, char** argv) {
         std::cout << "Failed to program any device found, exit!\n";
         exit(EXIT_FAILURE);
     }
-    //Need to calculate r and d
+    //Create Pointers to go to other HBM banks
+    cl_mem_ext_ptr_t A_cl,r_cl,r_old_cl,d_cl,d_old_cl,x_cl,x_old_cl;
+    A_cl.obj=A_fin;
+    A_cl.param=0;
+    A_cl.flags=bank[1];
+    r_cl.obj=r_FPGA;
+    r_cl.param=0;
+    r_cl.flags=bank[2];
+    r_old_cl.obj=r_old_FPGA;
+    r_old_cl.param=0;
+    r_old_cl.flags=bank[2];
+    d_cl.obj=d_FPGA;
+    d_cl.param=0;
+    d_cl.flags=bank[3];
+    d_old_cl.obj=d_old_FPGA;
+    d_old_cl.param=0;
+    d_old_cl.flags=bank[3];
+    x_cl.obj=x_FPGA;
+    x_cl.param=0;
+    x_cl.flags=bank[4];
+    x_old_cl.obj=x_old_FPGA;
+    x_old_cl.param=0;
+    x_old_cl.flags=bank[4];
 
 
     // Allocate Buffer in Global Memory
     // Buffers are allocated using CL_MEM_USE_HOST_PTR for efficient memory and
     // Device-to-host communication
-    OCL_CHECK(err, cl::Buffer buffer_in1(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY ,Mat_Size_bytes,
-                                         (void*)A_fin, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in2(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE , vector_size_bytes,
-                                         (void*)r_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in3(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE , vector_size_bytes,
-                                         (void*)r_old_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in4(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE , vector_size_bytes,
-                                         (void*)d_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in5(context, CL_MEM_USE_HOST_PTR |CL_MEM_READ_WRITE , vector_size_bytes,
-                                         (void*)d_old_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in6(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, vector_size_bytes,
-                                         (void*)x_FPGA, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in7(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE , vector_size_bytes,
-                                         (void*)x_old_FPGA, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in1(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX ,Mat_Size_bytes,
+                                         &A_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in2(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX , vector_size_bytes,
+    									&r_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in3(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, vector_size_bytes,
+                                         &r_old_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in4(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, vector_size_bytes,
+                                         &d_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in5(context, CL_MEM_USE_HOST_PTR |CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, vector_size_bytes,
+                                         &d_old_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in6(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, vector_size_bytes,
+                                         &x_cl, &err));
+    OCL_CHECK(err, cl::Buffer buffer_in7(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX, vector_size_bytes,
+                                         &x_old_cl, &err));
     OCL_CHECK(err, cl::Buffer BET(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(float)),
                                             (void*)(beta), &err));
     OCL_CHECK(err, cl::Buffer lam(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE, (sizeof(float)),
