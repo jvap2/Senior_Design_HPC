@@ -112,6 +112,8 @@ __host__ void Dot_Helper(float* vect_1, float* vect_2, float* ref, float* dot_GP
     float total_time=Elapsed_dh+Elapsed_hd;
     float bytes_transferred=(2*vect_size+sizeof(float))*1.0f;
     float throughput=(bytes_transferred*1e-6)/(total_time);
+    cout<<"Device to Host: "<<Elapsed_dh<<" ms"<<endl;
+    cout<<"Host to Device: "<<Elapsed_hd<<" ms"<<endl;
     cout<< "GPU CG Memory elapsed time: "<<total_time<< " ms"<<endl;
     cout<< "GPU CG Exec elapsed time: "<<ElapsedTime<< " ms"<<endl;
     cout<< "GPU CG total elapsed time: "<<ElapsedTime+total_time<< " ms"<<endl;
