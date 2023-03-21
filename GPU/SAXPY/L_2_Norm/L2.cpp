@@ -4,7 +4,7 @@
 int main(){
     float *v;
     float mu, mu_GPU;
-    int size=64;
+    int size=1<<17;
     cout<<"Vector Size is "<<size<<endl;
     v=new float[size];
     Generate_Vector(v,size);
