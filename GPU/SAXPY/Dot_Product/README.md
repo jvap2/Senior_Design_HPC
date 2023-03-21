@@ -1,4 +1,4 @@
-|Size|CPU Exec time (ms)| GPU exec time (ms) | Memory Transfer (H->D) | Memory Transfer (D->H)| SpeedUp| Throughput (GB/s)|
+|Size|CPU Exec time (ms)| GPU Exec time (ms) | Memory Transfer (H->D) | Memory Transfer (D->H)| SpeedUp| Throughput (GB/s)|
 |----|------------------|--------------------|------------------------|-----------------------|--------|------------------|
 |64|.0007|.032768| .02048 | .016864 | | .0138175|
 |128|.0012|.03072|.02048 | .014912 | | .0290461 |
