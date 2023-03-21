@@ -4,7 +4,7 @@
 int main(){
     float *v_1, *v_2;
     float dot_CPU{}, dot_GPU{};
-    int size=65536;
+    int size=131072;
     v_1=new float[size];
     v_2=new float[size];
     Generate_Vector(v_1,size);
