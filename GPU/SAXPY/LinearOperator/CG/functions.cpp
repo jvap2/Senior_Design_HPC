@@ -14,22 +14,7 @@ void TransposeOnCPU(float* matrix, float* matrixTranspose, int ny, int nx)
 		}
 	}
 }
-void cpuMatrixMult(float* A, float* A_T, float* C, const int ny, const int nx)
-{
-	float fSum;
-	for (int i = 0; i < ny; i++)
-	{
-		for (int j = 0; j < nx; j++)
-		{
-			fSum = 0.0f;
-			for (int k = 0; k < nx; k++)
-			{
-				fSum += (A[(i * nx) + k] * A_T[(k * nx) + j]);
-			}
-			C[(i * nx) + j] = fSum;
-		}
-	}
-}
+
 void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int nx)
 {
 	float fSum;
@@ -38,7 +23,15 @@ void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int n
         fSum = 0.0f;
 		for (int j = 0; j < nx; j++)
 		{
-			fSum += (A_T[(i * nx) + j] * b[j]);
+			if(j>i){
+				fSum += (A_T[j-i] * b[j]);
+			}
+			else if(i>j){
+				fSum += (A_T[i-j] * b[j]);
+			}
+			else{
+				fSum+=(A_T[0]*b[j]);
+			}
 		}
         b_new[i]=fSum;
 	}
@@ -46,29 +39,13 @@ void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int n
 
 void Diag_Dominant_Opt(float* Mat, int N) {
 	float max_row{};
-	float max_col{};
 	for (int i{}; i < N;i++) {
-		for (int j{ 1 }; j < N;j++) {
-		    max_row+=fabsf(Mat[i*N+j]);
-		    max_col+=fabsf(Mat[j*N+i]);
-		}
-		if(max_col>=max_row){
-		    Mat[i*N+i]=max_col;
-		}
-		else{
-		    Mat[i * N + i] = max_row;
-		}
-		max_row=0;
-		max_col=0;
+		max_row+=fabsf(Mat[i]);
 	}
+	Mat[0]=max_row;
 }
 
 
-void Generate_Vector(float* in, int size){
-    for(int i{}; i<size;i++){
-        in[i]=(float)(rand())/(float)(RAND_MAX);
-    }
-}
 
 
 void InitializeMatrix(float *matrix, int ny, int nx)
