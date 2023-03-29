@@ -5,8 +5,8 @@ int main()
 {
 	srand((unsigned)time(NULL));
 
-	int rows = 1<<12;//This is left shifting to get 2^10, and we want this to be to power of 2 for GPU
-	int cols = 1<<12;//256x256 matrix if both are 1<<8
+	int rows = 1<<8;//This is left shifting to get 2^10, and we want this to be to power of 2 for GPU
+	int cols = 1<<8;//256x256 matrix if both are 1<<8
 	cout << "Matrix Multiplication of Size: " << rows << "x" << cols << endl;
 	float* A, * B, * C;//Defining three matrices
 	int C_size=(rows*cols);
