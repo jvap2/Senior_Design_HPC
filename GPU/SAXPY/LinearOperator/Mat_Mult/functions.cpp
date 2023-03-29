@@ -66,3 +66,18 @@ void MatrixMultVerification(float* hostC, float* gpuC, const int ny, const int n
 		q += nx;
 	}
 }
+
+
+void Generate_Vector(float* in, int size){
+    for(int i{}; i<size;i++){
+        in[i]=(float)(rand())/(float)(RAND_MAX);
+    }
+}
+
+void Diag_Dominant_Opt(float* Mat, int N) {
+	float max_row{};
+	for (int i{}; i < N;i++) {
+		max_row+=fabsf(Mat[i]);
+	}
+	Mat[0]=max_row;
+}

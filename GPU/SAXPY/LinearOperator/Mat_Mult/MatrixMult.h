@@ -18,6 +18,9 @@ void DisplayMatrix(string name, float* temp, const int ny, const int nx);
 
 //CPU Implementations
 void cpuMatrixMult(float* A, float* B, float* C, const int ny, const int nx);
+void Generate_Vector(float* in, int size);
+void Diag_Dominant_Opt(float* Mat, int N);
+
 
 
 //GPU Functions
