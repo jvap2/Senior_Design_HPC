@@ -81,3 +81,15 @@ void Diag_Dominant_Opt(float* Mat, int N) {
 	}
 	Mat[0]=max_row;
 }
+
+void Verify(float* iter, float* res, int size){
+	for(int i{}; i<size; i++){
+		float dif=fabsf(*(iter+i)-*(res+i));
+		if(dif>1e-4){
+			cout<<"GPU["<<i<<"]="<<*(iter+i)<<endl;
+			cout<<"CPU["<<i<<"]="<<*(res+i)<<endl;
+			cout<<"Error with the Dot Product"<<endl;
+			return;
+		}
+	}
+}

@@ -5,11 +5,14 @@ __global__ void NaiveMult(float* g_A, float* g_B, float* g_C, const int ny, cons
 	int col = threadIdx.x + (blockIdx.x * blockDim.x);
 	float fSum = 0.0f;
 	//This conditional is for debugging, even though done on the device
+
 	if (row < ny && col < nx) { 
 		for (int k = 0; k < nx; k++) {
-			fSum += g_A[row * nx + k] * g_B[k * nx + col];
+			int idx_A = abs(row-k);
+			int idx_B = abs(k-col);
+			fSum += g_A[idx_A] * g_B[idx_B];
 		}
-		g_C[row * nx + col] = fSum;
+		g_C[row * (nx) + col] = fSum;
 	}
 }
 
@@ -18,20 +21,26 @@ __global__ void NaiveMult(float* g_A, float* g_B, float* g_C, const int ny, cons
 __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* ref, const int ny, const int nx)
 {
 	float* d_A, * d_B, * d_C;
-	const int MatrixSizeInBytes = ny * nx * sizeof(float);//rowsxcolsxnumber of bytes
-
+	const int MatrixSizeInBytes = nx * sizeof(float);//rowsxcolsxnumber of bytes
+	const int C_size_in_Bytes=sizeof(float)*(nx*(ny));
 	//Allocate device memory on the global memory
+	cout<<(nx*(nx+1))/2<<endl;
 	
 	HandleCUDAError(cudaMalloc((void**)&d_A, MatrixSizeInBytes));
 	HandleCUDAError(cudaMalloc((void**)&d_B, MatrixSizeInBytes));
-	HandleCUDAError(cudaMalloc((void**)&d_C, MatrixSizeInBytes));
+	HandleCUDAError(cudaMalloc((void**)&d_C, C_size_in_Bytes));
 
 
 	//transfer data from CPU Memory to GPU Memory
 	chrono::time_point<std::chrono::system_clock> start, end;
 	start = std::chrono::system_clock::now();
-	HandleCUDAError(cudaMemcpy(d_A, h_A, MatrixSizeInBytes, cudaMemcpyHostToDevice));
-	HandleCUDAError(cudaMemcpy(d_B, h_B, MatrixSizeInBytes, cudaMemcpyHostToDevice));
+	if(!HandleCUDAError(cudaMemcpy(d_A, h_A, MatrixSizeInBytes, cudaMemcpyHostToDevice))){
+		cout<<"cannot transfer A"<<endl;
+	}
+
+	if(!HandleCUDAError(cudaMemcpy(d_B, h_B, MatrixSizeInBytes, cudaMemcpyHostToDevice))){
+		cout<<"cannot transfer B"<<endl;
+	}
 	end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end - start;
 	cout << "GPU Memory Transfer time (H to D): " << (elapsed_seconds.count() * 1000.0f) << " msecs" << endl;
@@ -60,13 +69,15 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* ref, cons
 
 	start = std::chrono::system_clock::now();
 	//Copy product matrix to host
-	HandleCUDAError(cudaMemcpy(h_C, d_C, MatrixSizeInBytes, cudaMemcpyDeviceToHost));
+	if(!HandleCUDAError(cudaMemcpy(h_C, d_C, C_size_in_Bytes, cudaMemcpyDeviceToHost))){
+		cout<<"Unable to transfer C"<<endl;
+	}
 	end = std::chrono::system_clock::now();
 	elapsed_seconds = end - start;
 	cout << "GPU Memory Transfer time (D to H): " << (elapsed_seconds.count() * 1000.0f) << " msecs" << endl;
 	
 	//Verification code
-	MatrixMultVerification(ref, h_C, ny, nx);
+	Verify(h_C,ref, ny);
 	
 	//Release Memory and reset device
 	HandleCUDAError(cudaFree(d_A));

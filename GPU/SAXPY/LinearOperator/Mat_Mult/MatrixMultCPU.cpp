@@ -15,7 +15,8 @@ void cpuMatrixMult(float* A, float* B, float* C, const int ny, const int nx)
 			{
 				fSum += (A[abs(i-k)] * B[abs(k-j)]);
 			}
-			C[count] = fSum;
+
+			C[i*nx+j] = fSum;
 			count++;
 		}
 	}
