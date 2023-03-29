@@ -23,15 +23,7 @@ void cpuMatrixVect(float* A_T, float* b, float* b_new, const int ny, const int n
         fSum = 0.0f;
 		for (int j = 0; j < nx; j++)
 		{
-			if(j>i){
-				fSum += (A_T[j-i] * b[j]);
-			}
-			else if(i>j){
-				fSum += (A_T[i-j] * b[j]);
-			}
-			else{
-				fSum+=(A_T[0]*b[j]);
-			}
+			fSum += (A_T[abs(j-i)] * b[j]);
 		}
         b_new[i]=fSum;
 	}

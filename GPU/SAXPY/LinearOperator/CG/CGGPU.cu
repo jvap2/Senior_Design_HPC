@@ -63,7 +63,8 @@ __global__ void MatrixVectorMult(float* g_Matrix, float* g_V, float* g_P, const 
 	if (row < Size) {
 		//We are trying to ensure we are not using more threads than data we have
 		for (int k{}; k < Size;k++) {
-			fSum += g_Matrix[row * Size + k] * g_V[k];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
+            int idx=abs(row-k);
+			fSum += g_Matrix[idx] * g_V[k];//Here we are dotting the row of g_matrix(corresponding to the index of each thread) with g_V
 		}
 		g_P[row] = fSum;//We now assign the row_th entry of g_P the value fSum, i.e., our dot product
 	}
@@ -114,11 +115,10 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     float* d_hold_2;
     int threads_per_block=128;
     int blocks_per_grid=(size/threads_per_block)+1;
-    int mat_size=size*size*sizeof(float);
     int vect_size=size*sizeof(float);
     int var_size=sizeof(float);
     int p_sum_size=sizeof(float)*blocks_per_grid;
-    HandleCUDAError(cudaMalloc((void**) &d_A,mat_size));
+    HandleCUDAError(cudaMalloc((void**) &d_A,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_r,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_r_old,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_d,vect_size));
@@ -138,10 +138,6 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     HandleCUDAError(cudaMalloc((void**) &d_dot_partial_2,p_sum_size));
     HandleCUDAError(cudaMalloc((void**) &d_hold_1,vect_size));
     HandleCUDAError(cudaMalloc((void**) &d_hold_2,vect_size));
-    HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
-    HandleCUDAError(cudaMemcpy(d_r_old,r_old,vect_size,cudaMemcpyHostToDevice));
-    HandleCUDAError(cudaMemcpy(d_d_old,d_old,vect_size,cudaMemcpyHostToDevice));
-    HandleCUDAError(cudaMemcpy(d_x_old,x_old,vect_size,cudaMemcpyHostToDevice));
 
     cudaStream_t dot_1;
     cudaStream_t dot_2;
@@ -163,7 +159,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
     HandleCUDAError(cudaEventCreate(&start_hd));
     HandleCUDAError(cudaEventCreate(&stop_hd));
     HandleCUDAError(cudaEventRecord(start_hd,0));
-    HandleCUDAError(cudaMemcpy(d_A,A,mat_size,cudaMemcpyHostToDevice));
+    HandleCUDAError(cudaMemcpy(d_A,A,vect_size,cudaMemcpyHostToDevice));
     HandleCUDAError(cudaMemcpy(d_r_old,r_old,vect_size,cudaMemcpyHostToDevice));
     HandleCUDAError(cudaMemcpy(d_d_old,d_old,vect_size,cudaMemcpyHostToDevice));
     HandleCUDAError(cudaMemcpy(d_x_old,x_old,vect_size,cudaMemcpyHostToDevice));
@@ -260,7 +256,7 @@ __host__ void CG_Helper(float* A, float* ref, float* r, float* r_old, float* d, 
 	}
 
     float total_time=Elapsed_dh+Elapsed_hd;
-    float bytes_transferred=(mat_size+4*vect_size)*1.0f;
+    float bytes_transferred=(5*vect_size)*1.0f;
     float throughput=(bytes_transferred*1e-6)/(total_time);
     cout<< "GPU CG Memory elapsed time: "<<total_time<< " ms"<<endl;
     cout<< "GPU CG Exec elapsed time: "<<ElapsedTime<< " ms"<<endl;
