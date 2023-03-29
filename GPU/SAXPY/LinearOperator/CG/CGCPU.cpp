@@ -1,6 +1,7 @@
 #include "CG.h"
 
 void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, float* x_old, float beta, float lamdba, int size, int* iter){
+    std::cout<<"Inside the function"<<endl;
     float Ad[size]={};
     float lamd_d[size]={};
     float beta_d[size]={};
@@ -9,13 +10,13 @@ void C_G(float* A, float* r, float* r_old, float* d, float* d_old, float* x, flo
     float temp_2{};
     *iter=1;
     int MaxIter=10*size;
-    float fSum;
     float norm{};
     while(*(iter)<MaxIter){
         cpuMatrixVect(A,d_old,Ad,size,size);
         temp_1=Dot_Product(r_old,r_old,size);
         temp_2=Dot_Product(d_old,Ad,size);
         if(fabsf(temp_2)<1e-8){
+            std::cout<<"Small value for <d,Ad>, convergence met"<<endl;
             return;
         }
         lamdba=temp_1/temp_2;

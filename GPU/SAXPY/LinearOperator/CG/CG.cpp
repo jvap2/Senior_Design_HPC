@@ -35,23 +35,35 @@ int main(){
     Diag_Dominant_Opt(A,nx);
     Generate_Vector(b,ny);
     Generate_Vector(x_old,ny);
+    std::cout<<"x"<<endl;
+    for(int i=0; i<ny;i++){
+        std::cout<<x_old[i]<<endl;
+    }
+    std::cout<<"row 0 A"<<endl;
+    for(int i=0; i<ny;i++){
+        std::cout<<A[i]<<endl;
+    }
+    std::cout<<"b"<<endl;
+    for(int i=0; i<ny;i++){
+        std::cout<<b[i]<<endl;
+    }
     cpuMatrixVect(A, x_old, Ax, ny, nx);
     vector_subtract(b,Ax,r_old,ny);
     // vector_subtract(b_res,Ax,r_old_GPU,ny);
 
-    // for(int i=0; i<ny;i++){
-    //     x_old_GPU[i]=x_old[i];
-    //     d_old[i]=r_old[i];
-    //     d_old_GPU[i]=d_old[i];
-    // }
+    for(int i=0; i<ny;i++){
+        // x_old_GPU[i]=x_old[i];
+        d_old[i]=r_old[i];
+        // d_old_GPU[i]=d_old[i];
+    }
     chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    C_G(A_res,r,r_old,d,d_old,x,x_old,beta,lambda,ny,&iter);
+    C_G(A,r,r_old,d,d_old,x,x_old,beta,lambda,ny,&iter);
     end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elasped_seconds = end - start;
 	cout << "CPU Execution time: " << (elasped_seconds.count() * 1000.0f) << " msecs" << endl;
     // CG_Helper(A_res,x,r_GPU,r_old_GPU,d_GPU,d_old_GPU,x_GPU,x_old_GPU,beta_GPU,lambda_GPU,ny,iter);
-
+    Display("CPU",x,ny);
     delete[] Ax;
     delete[] A;
     delete[] b;
