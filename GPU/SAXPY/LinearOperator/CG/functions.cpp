@@ -132,3 +132,9 @@ float L_2(float* in, int size){
     val=sqrtf(val);
     return val;
 }
+
+void Generate_Vector(float* in, int size){
+    for(int i{}; i<size;i++){
+        in[i]=(float)(rand())/(float)(RAND_MAX);
+    }
+}
