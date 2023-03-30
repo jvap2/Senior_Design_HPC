@@ -120,4 +120,5 @@ __host__ void gpuMultHelper(float* h_A, float* h_B, float* h_C, float* ref, cons
 	HandleCUDAError(cudaFree(d_C));
 
 	cudaDeviceReset();
+	//
 }
