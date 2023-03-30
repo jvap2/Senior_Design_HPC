@@ -1,7 +1,0 @@
-16:48:02 **** Incremental Build of configuration Emulation-HW for project dot_product ****
-make -j12 all 
-g++ -std=c++1y -DVITIS_PLATFORM=xilinx_u55c_gen3x16_xdma_3_202210_1 -D__USE_XOPEN2K8 -I/home/sureshm/EE_4830_GPU/Senior_Design_HPC/FPGA/dot_product/libs/common/includes/xcl2 -I/opt/xilinx/xrt/include/ -I/tools/Xilinx/Vitis_HLS/2022.1/include/ -O0 -g -Wall -c -fmessage-length=0 -o "src/host.o" "../src/host.cpp"
-g++ -o "dot_product" libs/common/includes/xcl2/xcl2.o src/host.o -lxilinxopencl -lpthread -lrt -lstdc++ -L/opt/xilinx/xrt/lib/ -Wl,-rpath-link,/opt/xilinx/xrt/lib
-
-16:48:04 Build Finished (took 2s.87ms)
-
