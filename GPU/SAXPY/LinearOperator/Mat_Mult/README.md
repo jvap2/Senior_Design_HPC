@@ -1,3 +1,2 @@
-|Size|CPU exec time(ms)|GPU exec time(ms)|Memory Transfer (ms)|SpeedUp|Throughput|
-|----|-----------------|-----------------|--------------------|-------|----------|
-|256| 
+|Size|CPU Execution Time(ms)|GPU Execution Time (ms)| Memory Transfer (ms)| SpeedUp | Throughput|
+|----|----------------------|-----------------------|---------------------|---------|-----------|
