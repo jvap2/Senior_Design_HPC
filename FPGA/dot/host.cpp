@@ -43,13 +43,11 @@ int main(int argc, char** argv) {
     // ensure that user buffer is used when user create Buffer/Mem object with
     // CL_MEM_USE_HOST_PTR
 
-    float* source_in1{};
-    float* source_in2{};
+    float source_in1[DATA_SIZE]{};
+    float source_in2[DATA_SIZE]{};
     float source_sw_results{};
     float res[1];
     // Create the test data
-    source_in1= new float[DATA_SIZE];
-    source_in2= new float[DATA_SIZE];
     for (int i = 0; i < DATA_SIZE; i++) {
     	source_in1[i]=(float)(rand())/(float)(RAND_MAX);
     	source_in2[i]=(float)(rand())/(float)(RAND_MAX);
@@ -128,8 +126,7 @@ int main(int argc, char** argv) {
             break;
         }
     }
-    delete[] source_in1;
-    delete[] source_in2;
+
     std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl<< "FPGA="<<*res<<std::endl<<"CPU="<<source_sw_results<<std::endl;
     return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }
