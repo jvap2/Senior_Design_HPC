@@ -6,28 +6,27 @@
 #include <cmath>
 
 
-#define N 256
-#define nx 256
-#define ny 256
-#define MAT_SIZE N*N
+#define N 2048
+#define nx 2048
+#define ny 2048
 void dot_p(float a[N], float b[N], float out[1])
 {
   float a_int[N],b_int[N];
-#pragma HLS array_partition  variable=a_int dim=1 complete
-#pragma HLS array_partition  variable=b_int dim=1 complete
+#pragma HLS array_partition  variable=a_int type=block factor=8
+#pragma HLS array_partition  variable=b_int type=block factor=8
   float product = 0;
 
   for(int i=0;i<N;i++) {
-  #pragma HLS pipeline
+  #pragma HLS unroll
     a_int[i] = a[i];
   }
   for(int i=0;i<N;i++) {
-  #pragma HLS pipeline
+  #pragma HLS unroll
     b_int[i] = b[i];
   }
 
   for(int i=0;i<N;i++) {
-  #pragma HLS unroll
+  #pragma HLS pipeline
     product += a_int[i] * b_int[i];
   }
  out[0] = product;
@@ -36,8 +35,8 @@ void dot_p(float a[N], float b[N], float out[1])
 
 void vadd_p(float a[N], float b[N], float out[N]){
 	float a_int[N],b_int[N];
-	#pragma HLS array_partition  variable=a_int dim=1 complete
-	#pragma HLS array_partition  variable=b_int dim=1 complete
+	#pragma HLS array_partition  variable=a_int type=block factor=8
+	#pragma HLS array_partition  variable=b_int type=block factor=8
 
 	  copy_a:for(int i=0;i<N;i++) {
 	  #pragma HLS pipeline
@@ -49,22 +48,32 @@ void vadd_p(float a[N], float b[N], float out[N]){
 	  }
 
 	  final: for(int i=0;i<N;i++) {
-	  #pragma HLS unroll
+	  #pragma HLS unroll factor=4
 	    out[i] = a_int[i] + b_int[i];
 	  }
 }
 
-void MatVec_Mult(float A[MAT_SIZE], float b[N], float b_new[N]){
-#pragma HLS array partition variable=A complete
-#pragma HLS array partition variable=b In complete
-	int fSum;
+void MatVec_Mult(float A[N], float b[N], float b_new[N]){
+	float A_comp[N]{};
+	float b_comp[N]{};
+#pragma HLS array partition variable=A_comp type=block factor=16
+#pragma HLS array partition variable=b_comp type=block factor=16
+	copy_A: for(int i=0; i<N; i++){
+#pragma HLS unroll factor=4
+		A_comp[i]=A[i];
+	}
+	copy_b: for(int i=0; i<N; i++){
+#pragma HLS unroll factor=4
+		b_comp[i]=b[i];
+	}
+	float fSum;
 	row: for (int i = 0; i < ny; i++)
 	{
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=8
         fSum = 0.0f;
 		col: for (int j = 0; j < nx; j++)
 		{
-			fSum += (A[(i * nx) + j] * b[j]);
+			fSum += (A_comp[abs(i-j)] * b_comp[j]);
 		}
         b_new[i]=fSum;
 	}
@@ -73,7 +82,7 @@ void MatVec_Mult(float A[MAT_SIZE], float b[N], float b_new[N]){
 void Copy(float new_v[N], float old_v[N]){
 	float d_old[N];
 	trans: for(int i=0; i<N;i++){
-#pragma HLS pipeline
+#pragma HLS unroll
 		d_old[i]=old_v[i];
 	}
 	cop: for(int i=0; i<N; i++){
@@ -106,7 +115,7 @@ void compt(float scal_1, float scal_2, float out[1],int flag){
 	}
 
 }
-void final(float A[MAT_SIZE],
+void final(float A[N],
 		float r[N],
 		float r_old[N],
 		float d[N],
@@ -125,6 +134,7 @@ void final(float A[MAT_SIZE],
 	float Lamb_Ad[N]{};
 	float neg_lamb[1]{};
 	int count = *iter;
+#pragma HLS interface m_axi port=A bundle=gmem2 num_write_outstanding=128
 	for(int i{}; i<=(count);i++){
 		MatVec_Mult(A, d_old, Ad);
 		dot_p(r_old,r_old, &r_old_dot);
