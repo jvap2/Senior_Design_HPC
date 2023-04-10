@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <vector>
 #include <math.h>
-#define DATA_SIZE 64
+#define DATA_SIZE 128
 
 
 int main(int argc, char** argv) {
@@ -54,10 +54,16 @@ int main(int argc, char** argv) {
     for (int i = 0; i < DATA_SIZE; i++) {
     	source_in1[i]=(float)(rand())/(float)(RAND_MAX);
     	source_in2[i]=source_in1[i];
-    	std::cout<<source_in1[i]<<std::endl;
-        source_sw_results += source_in1[i] * source_in2[i];
+    }
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    for(int i=0; i<DATA_SIZE;i++){
+    	source_sw_results += source_in1[i] * source_in2[i];
     }
     source_sw_results=sqrtf(source_sw_results);
+    end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elasped_seconds = end - start;
+	std::cout << "CPU Execution time: " << (elasped_seconds.count() * 1000.0f) << " msecs" << std::endl;
     *res=0.0f;
 
     // OPENCL HOST CODE AREA START
@@ -80,7 +86,7 @@ int main(int argc, char** argv) {
             std::cout << "Failed to program device[" << i << "] with xclbin file!\n";
         } else {
             std::cout << "Device[" << i << "]: program successful!\n";
-            OCL_CHECK(err, krnl_vector_add = cl::Kernel(program, "vadd", &err));
+            OCL_CHECK(err, krnl_vector_add = cl::Kernel(program, "L2", &err));
             valid_device = true;
             break; // we break because we found a valid device
         }
@@ -95,18 +101,15 @@ int main(int argc, char** argv) {
     // Device-to-host communication
     OCL_CHECK(err, cl::Buffer buffer_in1(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY , vector_size_bytes,
                                          (void*)source_in1, &err));
-    OCL_CHECK(err, cl::Buffer buffer_in2(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY , vector_size_bytes,
-                                         (void*)source_in2, &err));
     OCL_CHECK(err, cl::Buffer sum(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, (sizeof(float)),
                                             (void*)(res), &err));
 
 //    int size = DATA_SIZE;
     OCL_CHECK(err, err = krnl_vector_add.setArg(0, buffer_in1));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(1, buffer_in2));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(2, sum));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(1, sum));
 
     // Copy input data to device global memory
-    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_in1, buffer_in2}, 0 /* 0 means from host*/));
+    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_in1,sum}, 0 /* 0 means from host*/));
 
     // Launch the Kernel
     // For HLS kernels global and local size is always (1,1,1). So, it is
@@ -118,7 +121,7 @@ int main(int argc, char** argv) {
     OCL_CHECK(err, err = q.enqueueMigrateMemObjects({sum}, CL_MIGRATE_MEM_OBJECT_HOST));
     q.finish();
     // OPENCL HOST CODE AREA END
-
+    *res=sqrtf(*res);
     // Compare the results of the Device to the simulation
     bool match = true;
     for (int i = 0; i < DATA_SIZE; i++) {
@@ -130,8 +133,6 @@ int main(int argc, char** argv) {
             break;
         }
     }
-    delete[] source_in1;
-    delete[] source_in2;
     std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl<< "FPGA="<<*res<<std::endl<<"CPU="<<source_sw_results<<std::endl;
     return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }
