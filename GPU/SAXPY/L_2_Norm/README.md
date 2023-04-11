@@ -14,6 +14,4 @@
 |131072| 1.0274 | .03729 | .07028 | .01529 | 27.55| 6.1285 |
 
 
-![fig_1](https://user-images.githubusercontent.com/84815326/226651840-0589e108-df50-4552-88d6-cc4ddc9746c4.png)
-![fig_2](https://user-images.githubusercontent.com/84815326/226651844-6d0a0afe-196b-47de-b411-feeb282f46ea.png)
-![fig_3](https://user-images.githubusercontent.com/84815326/226651845-3921b19e-806b-411d-9f8e-fa625c0fe47a.png)
+
