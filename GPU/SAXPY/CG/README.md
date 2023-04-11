@@ -15,3 +15,6 @@
 
 
 
+![fig_1](https://user-images.githubusercontent.com/84815326/231135152-02cca712-1278-4aa6-8e69-0b007753aa09.png)
+![fig_2](https://user-images.githubusercontent.com/84815326/231135154-c0ac0f06-e279-4dbc-82d1-d774417b0cf0.png)
+![fig_3](https://user-images.githubusercontent.com/84815326/231135170-888f443d-45be-43e5-bae3-e9889b791be0.png)
