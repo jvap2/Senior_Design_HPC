@@ -5,4 +5,3 @@ Size,CPU exec time (ms),FPGA Kernel (ms),Memory Transfer (ms),Speedup W/O Mem,Sp
 512,2.66676,1.98,.434,1.34,1.12,74.05
 1024,8.897,6.02,.804,1.478,1.304,131.56
 ,,,,,,
-,,,,,,
