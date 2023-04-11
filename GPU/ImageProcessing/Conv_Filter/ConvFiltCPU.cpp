@@ -2,11 +2,11 @@
 
 void Filter(CImg<unsigned char>& rgbImg, CImg<unsigned char>& blurImg, int v_off, int h_off){
     int sum_r{};
-    int sum_g{};
-    int sum_b{};
+    // int sum_g{};
+    // int sum_b{};
     unsigned char filter_r{};
-    unsigned char filter_g{};
-    unsigned char filter_b{};
+    // unsigned char filter_g{};
+    // unsigned char filter_b{};
     int h = rgbImg.height();
 	int w = rgbImg.width();
     int stride=h*w;
@@ -21,20 +21,20 @@ void Filter(CImg<unsigned char>& rgbImg, CImg<unsigned char>& blurImg, int v_off
                     int col=x+x_off-(h_off/2);
                     if(col>=0 && row>=0 && row<h && col<w){
                         sum_r+=(char)rgbImg(col,row,0,0);
-                        sum_g+=(char)rgbImg(col,row,0,1);
-                        sum_b+=(char)rgbImg(col,row,0,2);
+                        // sum_g+=(char)rgbImg(col,row,0,1);
+                        // sum_b+=(char)rgbImg(col,row,0,2);
                     }
                 }
             }
             filter_r=(char)sum_r/filt_size;
-            filter_g=(char)sum_g/filt_size;
-            filter_b=(char)sum_b/filt_size;
+            // filter_g=(char)sum_g/filt_size;
+            // filter_b=(char)sum_b/filt_size;
             blurImg(x,y,0,0)=filter_r;
-            blurImg(x,y,0,1)=filter_g;
-            blurImg(x,y,0,2)=filter_b;
+            // blurImg(x,y,0,1)=filter_g;
+            // blurImg(x,y,0,2)=filter_b;
             sum_r=0;
-            sum_g=0;
-            sum_b=0;
+            // sum_g=0;
+            // sum_b=0;
         }
     count++;
     }

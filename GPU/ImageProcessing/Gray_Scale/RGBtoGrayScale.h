@@ -23,7 +23,7 @@ float cpu__RGBtoGrayScale_Ver0(CImg<unsigned char>& rgbImg, CImg<unsigned char>&
 float cpu__RGBtoGrayScale_Ver1(unsigned char* in, unsigned char* out, unsigned int h, unsigned int w);
 //Now, we are passing pointers to access the input and output faster
 //GPU Helper Function
-__host__ double gpu_RGBtoGrayScaleHelper(unsigned char* h_in, unsigned char* h_out, unsigned int rgbSIZE,
+__host__ void gpu_RGBtoGrayScaleHelper(unsigned char* h_in, unsigned char* h_out, unsigned int rgbSIZE,
 	unsigned int graySIZE,
 	unsigned int h, 
 	unsigned int w,

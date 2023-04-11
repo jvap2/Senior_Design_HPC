@@ -11,7 +11,7 @@ int main()
 	//We use the place holder to say we want to work with unsigned characters
 	// One windows side, black slash is escape sequence, hence we need two backslashes. On linux side, they use forward slash
 	//CImg<unsigned char> imgRGB = CImg<>("D:\\Classes\\GPGPU\\Codes\\ImageProcessing\\Images\\cat.png");
-	CImg<unsigned char> imgRGB = CImg<>("D:\\EE5885_Vap\\Images\\mountain-landscape-reflection.jpg");
+	CImg<unsigned char> imgRGB = CImg<>("/home/sureshm/Senior_Design_HPC/GPU/ImageProcessing/Gray_Scale/mountain-landscape-reflection.jpg");
 	
 	//Display Image
 	CImgDisplay dispRGB(imgRGB, "Color Image");//We can create display object, which is CImgDisplay, and we can use dispRBG to display
@@ -42,7 +42,7 @@ int main()
 	//Display the GrayScale Image
 	CImgDisplay dispGray1(imgGrayScale,"Gray Scale Image CPU Version 0");//This creates a image type
 	
-	//CPU Version 1
+	//CPU Version 1disp
 	cpuComputeTime = cpu__RGBtoGrayScale_Ver1(ptrRGB, ptrGray, imgRGB.height(), imgRGB.width());
 	
 	cout << "RGB to GrayScale Conversion CPU Compute Time (Ver1): " << cpuComputeTime << " usecs" << endl;
@@ -54,24 +54,24 @@ int main()
 	unsigned char* gpu_ptrGray = gpu_imgGrayScale.data();
 	
 	//GPU Versions 0
-	gpuComputeTime = gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 0);
-	cout << "RGB to GrayScale Conversion GPU Compute Time (Ver0): " << gpuComputeTime << " usecs" << endl;
-	CImgDisplay gpu_dispGray3(gpu_imgGrayScale, "GrayScale Image - GPU - Ver0");
+	// gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 0);
+	// cout << "RGB to GrayScale Conversion GPU Compute Time (Ver0): " << gpuComputeTime << " usecs" << endl;
+	// CImgDisplay gpu_dispGray3(gpu_imgGrayScale, "GrayScale Image - GPU - Ver0");
 	
 	////GPU Versions 1
 	CImg<unsigned char> gpu_imgGrayScale2(imgRGB.width(), imgRGB.height());
 	gpu_ptrGray = gpu_imgGrayScale2.data();
-	gpuComputeTime = gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 1);	
+	gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 1);	
 	cout << "RGB to GrayScale Conversion GPU Compute Time (Ver1): " << gpuComputeTime << " usecs" << endl;
 	CImgDisplay gpu_dispGray4(gpu_imgGrayScale2, "GrayScale Image - GPU - Ver1");
 	
 
 	//GPU Version 2
-	CImg<unsigned char> gpu_imgGrayScale3(imgRGB.width(), imgRGB.height());
-	gpu_ptrGray = gpu_imgGrayScale3.data();
-	gpuComputeTime = gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 2);
-	cout << "RGB to GrayScale Conversion GPU Compute Time (Ver2): " << gpuComputeTime << " usecs" << endl;
-	CImgDisplay gpu_dispGray5(gpu_imgGrayScale3, "GrayScale Image - GPU - Ver1");
+	// CImg<unsigned char> gpu_imgGrayScale3(imgRGB.width(), imgRGB.height());
+	// gpu_ptrGray = gpu_imgGrayScale3.data();
+	// gpuComputeTime = gpu_RGBtoGrayScaleHelper(ptrRGB, gpu_ptrGray, rgbSize, graySize, imgRGB.height(), imgRGB.width(), 2);
+	// cout << "RGB to GrayScale Conversion GPU Compute Time (Ver2): " << gpuComputeTime << " usecs" << endl;
+	// CImgDisplay gpu_dispGray5(gpu_imgGrayScale3, "GrayScale Image - GPU - Ver1");
 	cin.get();
 	return 0;
 }

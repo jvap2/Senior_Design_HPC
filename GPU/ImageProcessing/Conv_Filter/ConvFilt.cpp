@@ -11,7 +11,7 @@ int main()
 	//We use the place holder to say we want to work with unsigned characters
 	// One windows side, black slash is escape sequence, hence we need two backslashes. On linux side, they use forward slash
 	//CImg<unsigned char> imgRGB = CImg<>("D:\\Classes\\GPGPU\\Codes\\ImageProcessing\\Images\\cat.png");
-	CImg<unsigned char> imgRGB = CImg<>("/home/sureshm/EE_4830_GPU/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");
+	CImg<unsigned char> imgRGB = CImg<>("/home/sureshm/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");
 	
 	//Display Image
 	CImgDisplay dispRGB(imgRGB, "Color Image");//We can create display object, which is CImgDisplay, and we can use dispRBG to display
@@ -26,9 +26,9 @@ int main()
 	unsigned char* ptrRGB = imgRGB.data();//This gives a pointer to the data of the image
 	CImg<unsigned char>imgGrayScale(imgRGB.width(),imgRGB.height());
 	//Create an empty image with a single channel - GrayScale
-	CImg<unsigned char>imgBlur_GPU=CImg<>("/home/sureshm/EE_4830_GPU/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");//This is done in column major order, hence for first parameter,it is width then height
+	CImg<unsigned char>imgBlur_GPU=CImg<>("/home/sureshm/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");//This is done in column major order, hence for first parameter,it is width then height
 	
-	CImg<unsigned char>imgBlur=CImg<>("/home/sureshm/EE_4830_GPU/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");//This is done in column major order, hence for first parameter,it is width then height
+	CImg<unsigned char>imgBlur=CImg<>("/home/sureshm/Senior_Design_HPC/GPU/ImageProcessing/Conv_Filter/lena.jpg");//This is done in column major order, hence for first parameter,it is width then height
 	//for gray scale we only need width and height, but for RGB we need to specify more. If we wanted 100 frames, then add 100,1)
 	// You will also need to specify the channel
 	//Store GrayScale image size in bytes
@@ -38,8 +38,9 @@ int main()
 	unsigned char* ptrBlur = imgBlur_GPU.data();
 
 	//CPU Version 0
-	// cpu__RGBtoGrayScale_Ver0(imgRGB,imgGrayScale);
-	Sharpen_Blue(imgRGB, imgBlur,mask, 3,3);
+	cpu__RGBtoGrayScale_Ver0(imgRGB,imgGrayScale);
+	CImgDisplay Gray(imgGrayScale);
+	Filter(imgGrayScale, imgBlur,3,3);
 	
 	// //Display the GrayScale Image
     CImgDisplay DispBlur(imgBlur,"Blurred Image");
