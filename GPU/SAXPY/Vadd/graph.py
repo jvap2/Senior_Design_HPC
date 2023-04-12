@@ -26,6 +26,7 @@ GPU_Mem=GPU_wo_Mem+data['Memory Transfer (ms)'].to_numpy()
 through=np.divide(size*4,data['Memory Transfer (ms)'].to_numpy())*10e-6
 SU_Mem=np.divide(CPU,GPU_Mem)
 SU_wo_Mem=np.divide(CPU,GPU_wo_Mem)
+print(through)
 
 fig, (ax1)= plt.subplots(1,1)
 ax1.plot(size,CPU, 'k',label='CPU')
