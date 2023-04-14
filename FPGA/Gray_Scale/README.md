@@ -6,3 +6,6 @@
 |Pistol Pete|300|540|3.328| 3.0429| .022912| .16425| .148| 1.0937|145.25| 1379.01| 4.3784|
 |Cowboy Joe| 1600 | 1200 | 41.828 | 40.259 | .037952 |2.0798 | .78256| 1.039| 1014.387| 1852.3| 9.81394|
 
+![fig_1](https://user-images.githubusercontent.com/84815326/231915021-62254399-5821-4047-8d45-8e1e90fcb9bb.png)
+![fig_2](https://user-images.githubusercontent.com/84815326/231915022-ddd357b4-80f6-4b0e-be0c-a238d250c119.png)
+![fig_3](https://user-images.githubusercontent.com/84815326/231915025-bf85b276-fdc4-4704-acd8-bf2705b36c2f.png)
