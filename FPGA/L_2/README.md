@@ -9,3 +9,6 @@
 
 
 
+![fig_1](https://user-images.githubusercontent.com/84815326/231915078-ee6b092a-74ef-42a8-9301-0459a0c77e73.png)
+![fig_2](https://user-images.githubusercontent.com/84815326/231915079-806ec88a-0ba8-46df-8ff7-d615961516b4.png)
+![fig_3](https://user-images.githubusercontent.com/84815326/231915081-be64f2e7-ca82-4831-9ace-bb405351db78.png)
