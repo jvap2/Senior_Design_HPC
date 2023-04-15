@@ -66,12 +66,6 @@ __host__ void Helper_Filter(unsigned char* h_in, unsigned char* h_out,unsigned i
 
 	dim3 dimGrid(ceil((float)w / TILE_WIDTH), ceil((float)h / TILE_WIDTH));
 	dim3 dimBlock(TILE_WIDTH, TILE_WIDTH, 1);
-    cout << "\t2D Grid Dimension" << endl;
-	cout << "\tNumber of Blocks along X dimension: " << dimGrid.x << endl;
-	cout << "\tNumber of Blocks along Y dimension: " << dimGrid.y << endl;
-	cout << "\t2D Block Dimension" << endl;
-	cout << "\tNumber of threads along X dimension: " << dimBlock.x << endl;
-	cout << "\tNumber of threads along Y dimension: " << dimBlock.y << endl;
 	HandleCUDAError(cudaEventRecord(start,0));
     d_Gauss_Filter<<<dimGrid,dimBlock>>>(d_in,d_out,h,w);
 	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
