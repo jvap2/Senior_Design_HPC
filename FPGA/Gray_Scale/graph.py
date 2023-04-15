@@ -27,6 +27,7 @@ SU_FPGA=data['SpeedUp FPGA'].to_numpy()
 SU_GPU=data['SpeedUp GPU'].to_numpy()
 through_FPGA=data['FPGA Throughput (MB/s)'].to_numpy()*(1/1000.0)
 through_GPU=data['GPU Throughput (GB/s)'].to_numpy()
+print(SU_FPGA)
 
 x=np.arange(len(Image))
 width =.2

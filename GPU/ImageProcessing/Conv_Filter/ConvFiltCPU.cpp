@@ -3,6 +3,7 @@
 void Filter(unsigned char* in, unsigned char* out, unsigned int h, unsigned int w){
 
     cout<<"Constructing Filter"<<endl;
+    auto start = high_resolution_clock::now();
     for(int i=0; i<h-2;i++){
         for(int j=0; j<w-2;j++){
             out[i*(w-2)+j]+=.0625*in[i*w+j];
@@ -16,6 +17,9 @@ void Filter(unsigned char* in, unsigned char* out, unsigned int h, unsigned int 
             out[i*(w-2)+j]+=.0625*in[(i+2)*w+j+2];
         }
     }
+    auto end = high_resolution_clock::now();
+	auto elasped_seconds = end - start;
+    cout<< "CPU Gaussian Filter execution time: "<<duration_cast<milliseconds>(elasped_seconds).count()<<" ms"<<endl;
 }
 
 
