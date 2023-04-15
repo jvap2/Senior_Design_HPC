@@ -19,7 +19,7 @@ void Filter(unsigned char* in, unsigned char* out, unsigned int h, unsigned int 
     }
     auto end = high_resolution_clock::now();
 	auto elasped_seconds = end - start;
-    cout<< "CPU Gaussian Filter execution time: "<<duration_cast<milliseconds>(elasped_seconds).count()<<" ms"<<endl;
+    cout<< "CPU Gaussian Filter execution time: "<<duration_cast<microseconds>(elasped_seconds).count()<<" us"<<endl;
 }
 
 
