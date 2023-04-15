@@ -7,3 +7,6 @@
 |Cowboy Joe| 1600 | 1200 | 41.828 | 34.5088 | .037952 |2.0798 | .78256| 1.2121| 1014.387| 1852.3| 9.81394|
 
 
+![fig_1](https://user-images.githubusercontent.com/84815326/232255779-cc1ed6f4-28ad-484a-b89c-8f879855f265.png)
+![fig_2](https://user-images.githubusercontent.com/84815326/232255780-6f6d6fc1-e176-4646-8a94-1702aaa670c8.png)
+![fig_3](https://user-images.githubusercontent.com/84815326/232255781-a7323be6-c28e-4dc1-8417-0e1ad84cf4a2.png)
