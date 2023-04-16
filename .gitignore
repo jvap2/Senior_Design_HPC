@@ -8,3 +8,6 @@
 *.xml
 *.prefs
 FPGA/.metadata/
+*.csv
+*.exe
+*.out
