@@ -23,3 +23,4 @@ __host__ void Helper_Filter(unsigned char* h_in, unsigned char* h_out,unsigned i
 	unsigned int h,
 	unsigned int w);
 __global__ void d_Gauss_Filter(unsigned char* in, unsigned char* out,int h, int w);
+__global__ void d_Gauss_Filter_v2(unsigned char* in, unsigned char* out,int h, int w);

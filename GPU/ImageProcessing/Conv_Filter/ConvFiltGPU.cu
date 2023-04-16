@@ -20,7 +20,42 @@ __global__ void d_Gauss_Filter(unsigned char* in, unsigned char* out,int h, int 
     }
 }
 #define TILE_WIDTH 16
-
+__global__ void d_Gauss_Filter_v2(unsigned char* in, unsigned char* out,int h, int w){
+	// __shared__ unsigned char in_shared[16][16];
+    int x=threadIdx.x+(blockIdx.x*blockDim.x);
+    int y=threadIdx.y+(blockIdx.y*blockDim.y);
+	int idx = y * (w-2)+x;
+	__shared__ unsigned char in_s[TILE_WIDTH+2][TILE_WIDTH+2];
+	int tx=threadIdx.x;
+	int ty =threadIdx.y;
+	if(x<w && y<h){
+		in_s[ty][tx]=in[y*w+x];
+		if(ty>=TILE_WIDTH-2){
+			in_s[ty+2][tx]=in[(y+2)*w+x];
+		}
+		if(tx>=TILE_WIDTH-2){
+			in_s[ty][tx+2]=in[y*w+x+2];
+		}
+		if(tx==TILE_WIDTH-1 && ty ==TILE_WIDTH-1){
+			in_s[ty+1][tx+1]=in[(y+1)*w+x+1];
+			in_s[ty+1][tx+2]=in[(y+1)*w+x+2];
+			in_s[ty+2][tx+1]=in[(y+2)*w+x+1];
+			in_s[ty+2][tx+2]=in[(y+2)*w+x+2];
+		}
+	}
+	__syncthreads();
+	if(x < (w-2) && y<(h-2) ){
+		out[idx]+=.0625*in_s[ty][tx];
+		out[idx]+=.125*in_s[ty][tx+1];
+		out[idx]+=.0625*in_s[ty][tx+2];
+		out[idx]+=.125*in_s[ty+1][tx];
+		out[idx]+=.25*in_s[ty+1][tx+1];
+		out[idx]+=.125*in_s[ty+1][tx+2];
+		out[idx]+=.0625*in_s[(ty+2)][tx];
+		out[idx]+=.125*in_s[(ty+2)][tx+1];
+		out[idx]+=.0625*in_s[(ty+2)][tx+2];
+	}
+}
 
 
 
@@ -64,10 +99,10 @@ __host__ void Helper_Filter(unsigned char* h_in, unsigned char* h_out,unsigned i
 		cout << "Unable to find elapsed time between events" << endl;
 	}
 
-	dim3 dimGrid(ceil((float)w / TILE_WIDTH), ceil((float)h / TILE_WIDTH));
+	dim3 dimGrid(ceil((float)w / (TILE_WIDTH)), ceil((float)h / (TILE_WIDTH)));
 	dim3 dimBlock(TILE_WIDTH, TILE_WIDTH, 1);
 	HandleCUDAError(cudaEventRecord(start,0));
-    d_Gauss_Filter<<<dimGrid,dimBlock>>>(d_in,d_out,h,w);
+    d_Gauss_Filter_v2<<<dimGrid,dimBlock>>>(d_in,d_out,h,w);
 	if (!HandleCUDAError(cudaEventRecord(stop, 0))) {
 		cout << "Unable to perform event records for stop" << endl;
 	}
