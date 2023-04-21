@@ -13,6 +13,8 @@ SU_Mem=data['speedup (cpu/total kernel time)'].to_numpy()
 SU_wo_Mem=np.divide(CPU,GPU_wo_Mem)
 through=(data['write latency (MB/s)'].to_numpy()+data['read latency (MB/s)'].to_numpy())/2
 print(through)
+print(SU_wo_Mem)
+print(SU_Mem)
 
 fig, (ax1)= plt.subplots(1,1)
 ax1.plot(size,CPU,'k',marker='*', label='CPU')
